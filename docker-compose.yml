@@ -12,6 +12,16 @@ services:
     container_name: micatalogo-app
     restart: unless-stopped
     working_dir: /var/www
+    environment:
+      - APP_KEY=base64:nHL3wMdsO7sNptN1XGGsPzhPfsAMbm8CRbyTwtVRmso=
+      - APP_ENV=production
+      - APP_DEBUG=false
+      - DB_CONNECTION=mysql
+      - DB_HOST=db
+      - DB_PORT=3306
+      - DB_DATABASE=api_micatalogo
+      - DB_USERNAME=user
+      - DB_PASSWORD=password
     networks:
       - micatalogo-net
     depends_on:
