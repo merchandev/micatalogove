@@ -1,0 +1,70 @@
+version: '3.8'
+
+services:
+  # -------------------------
+  # BACKEND SERVICES
+  # -------------------------
+  app:
+    build:
+      context: ./api-micatalogo
+      dockerfile: Dockerfile
+    image: micatalogo-app
+    container_name: micatalogo-app
+    restart: unless-stopped
+    working_dir: /var/www
+    volumes:
+      - ./api-micatalogo:/var/www
+    networks:
+      - micatalogo-net
+    depends_on:
+      - db
+
+  api-web:
+    image: nginx:alpine
+    container_name: micatalogo-api-web
+    restart: unless-stopped
+    ports:
+      - "8888:80"
+    volumes:
+      - ./api-micatalogo:/var/www
+      - ./api-micatalogo/docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
+    networks:
+      - micatalogo-net
+    depends_on:
+      - app
+
+  db:
+    image: mariadb:10.6
+    container_name: micatalogo-db
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: api_micatalogo
+      MYSQL_ROOT_PASSWORD: secret
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+    volumes:
+      - micatalogo-db-data:/var/lib/mysql
+    networks:
+      - micatalogo-net
+
+  # -------------------------
+  # FRONTEND SERVICES
+  # -------------------------
+  front-web:
+    build:
+      context: ./front-micatalogo
+      dockerfile: Dockerfile
+    image: micatalogo-frontend
+    container_name: micatalogo-front
+    restart: unless-stopped
+    ports:
+      - "3000:80"
+    networks:
+      - micatalogo-net
+
+networks:
+  micatalogo-net:
+    driver: bridge
+
+volumes:
+  micatalogo-db-data:
