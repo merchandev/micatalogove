@@ -12,22 +12,20 @@ services:
     container_name: micatalogo-app
     restart: unless-stopped
     working_dir: /var/www
-    volumes:
-      - ./api-micatalogo:/var/www
     networks:
       - micatalogo-net
     depends_on:
       - db
 
   api-web:
-    image: nginx:alpine
+    build:
+      context: ./api-micatalogo
+      dockerfile: docker/nginx/Dockerfile
+    image: micatalogo-api-web
     container_name: micatalogo-api-web
     restart: unless-stopped
     ports:
       - "8888:80"
-    volumes:
-      - ./api-micatalogo:/var/www
-      - ./api-micatalogo/docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
     networks:
       - micatalogo-net
     depends_on:
