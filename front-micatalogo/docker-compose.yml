@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: micatalogo-frontend
+    container_name: micatalogo-front
+    restart: unless-stopped
+    ports:
+      - "3000:80"
+    networks:
+      - micatalogo-net
+
+networks:
+  micatalogo-net:
+    driver: bridge
