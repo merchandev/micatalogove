@@ -8,13 +8,15 @@ import Login from './pages/admin/Login';
 import Dashboard from './pages/admin/Dashboard';
 import ProductsAdmin from './pages/admin/ProductsAdmin';
 
+import LandingPage from './pages/LandingPage';
+
 function App() {
   return (
     <AuthProvider>
       <CartProvider>
         <Router>
           <Routes>
-            <Route path="/" element={<Navigate to="/admin/login" replace />} />
+            <Route path="/" element={<LandingPage />} />
             <Route path="/tienda/:domain" element={<StoreFront />} />
             
             {/* Admin Routes */}
