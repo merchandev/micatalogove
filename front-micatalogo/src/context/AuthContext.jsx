@@ -40,8 +40,13 @@ export const AuthProvider = ({ children }) => {
         setUser(null);
     };
 
+    const registerLogin = (user, token) => {
+        localStorage.setItem('micatalogo_token', token);
+        setUser(user);
+    };
+
     return (
-        <AuthContext.Provider value={{ user, login, logout, loading }}>
+        <AuthContext.Provider value={{ user, login, logout, registerLogin, loading }}>
             {children}
         </AuthContext.Provider>
     );

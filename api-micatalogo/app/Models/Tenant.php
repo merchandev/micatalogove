@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Tenant extends Model
 {
-    protected $fillable = ['user_id', 'name', 'domain', 'whatsapp_number', 'store_description', 'store_logo'];
+    protected $fillable = ['user_id', 'name', 'domain', 'whatsapp_number', 'store_description', 'store_logo', 'theme'];
 
     public function user()
     {

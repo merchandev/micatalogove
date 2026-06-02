@@ -1,5 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import PublicNavbar from '../components/PublicNavbar';
+import PublicFooter from '../components/PublicFooter';
 import { motion } from 'framer-motion';
 import { 
   Clock, 
@@ -36,33 +38,7 @@ const LandingPage = () => {
       </div>
 
       {/* Navbar */}
-      <motion.nav 
-        initial={{ y: -100, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.5, ease: "easeOut" }}
-        className="fixed w-full z-50 bg-bgDark/60 backdrop-blur-xl border-b border-white/5"
-      >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-20">
-            <div className="flex items-center">
-              <span className="text-2xl font-bold tracking-tight">Mi<span className="text-accent">Catálogo</span></span>
-            </div>
-            <div className="hidden md:flex items-center space-x-8">
-              <a href="#" className="text-sm font-medium hover:text-accent transition-colors">Inicio</a>
-              <a href="#demos" className="text-sm font-medium text-gray-300 hover:text-accent transition-colors">Demos</a>
-              <a href="#planes" className="text-sm font-medium text-gray-300 hover:text-accent transition-colors">Planes</a>
-              <a href="#funcionalidades" className="text-sm font-medium text-gray-300 hover:text-accent transition-colors">Funcionalidades</a>
-              <a href="#contacto" className="text-sm font-medium text-gray-300 hover:text-accent transition-colors">Contacto</a>
-            </div>
-            <div className="flex items-center space-x-6">
-              <Link to="/admin/login" className="text-sm font-medium text-gray-300 hover:text-white transition-colors">Ingresar</Link>
-              <Link to="/admin/login" className="px-5 py-2.5 rounded-lg bg-accent hover:bg-accentHover text-white text-sm font-semibold transition-all shadow-[0_0_15px_rgba(16,185,129,0.4)] hover:shadow-[0_0_25px_rgba(16,185,129,0.6)]">
-                Crear tienda
-              </Link>
-            </div>
-          </div>
-        </div>
-      </motion.nav>
+      <PublicNavbar />
 
       <div className="relative z-10">
         {/* Hero Section */}
@@ -79,20 +55,20 @@ const LandingPage = () => {
             </motion.div>
             
             <motion.h1 variants={fadeUp} className="text-5xl sm:text-7xl font-extrabold tracking-tight mb-6">
-              Tu negocio en línea, <br/>
+              Multiplica tus ventas por WhatsApp, <br/>
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent to-emerald-300 drop-shadow-[0_0_20px_rgba(16,185,129,0.3)]">
-                sin complicaciones
+                en automático
               </span>
             </motion.h1>
             
             <motion.p variants={fadeUp} className="mt-4 max-w-2xl text-lg sm:text-xl text-gray-400 mx-auto mb-10">
-              Crea tu catálogo digital, vende por WhatsApp y cobra como prefieras: Pago Móvil, transferencia o Zelle.
+              Crea tu catálogo interactivo en minutos. Recibe los pedidos listos para cobrar por Pago Móvil, Zelle o Efectivo, sin pagar comisiones por venta.
             </motion.p>
             
             <motion.div variants={fadeUp} className="flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-4">
               <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                 <Link to="/admin/login" className="block w-full sm:w-auto px-8 py-4 rounded-xl bg-accent hover:bg-accentHover text-white font-semibold transition-all shadow-[0_0_20px_rgba(16,185,129,0.5)] hover:shadow-[0_0_30px_rgba(16,185,129,0.7)]">
-                  Crear mi catálogo gratis
+                  Comienza totalmente gratis
                 </Link>
               </motion.div>
               <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
@@ -139,9 +115,9 @@ const LandingPage = () => {
           >
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {[
-                { icon: Clock, title: "En 2 minutos", desc: "Crea tu tienda, añade tus productos y empieza a vender. Así de rápido." },
-                { icon: MessageCircle, title: "Pedidos por WhatsApp", desc: "Recibe los pedidos de tus clientes directamente en tu chat, listos para cerrar." },
-                { icon: Wallet, title: "Cobro Flexible", desc: "Recibe pagos en Bolívares (Pago Móvil, Transferencia) o en Dólares (Zelle, Efectivo)." }
+                { icon: Clock, title: "Lanzamiento Rápido", desc: "Configura tu vitrina digital en menos de 2 minutos. Añade productos y empieza a facturar de inmediato." },
+                { icon: MessageCircle, title: "Ventas sin Fricción", desc: "Los clientes arman su carrito y te envían el pedido detallado directamente a tu WhatsApp personal o de empresa." },
+                { icon: Wallet, title: "Finanzas Claras", desc: "Monitorea tus ingresos diarios. Configura la tasa del BCV y recibe pagos en Bs o divisas sin confusiones." }
               ].map((feature, idx) => (
                 <motion.div 
                   key={idx}
@@ -180,10 +156,10 @@ const LandingPage = () => {
               className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"
             >
               {[
-                { icon: Smartphone, title: "Diseño para el país", desc: "Herramientas de cobro y envíos adaptadas a la realidad venezolana." },
-                { icon: Store, title: "Para revendedores", desc: "Ofrece tu catálogo de manera profesional sin importar si tienes tienda física." },
-                { icon: Bot, title: "Asistente Inteligente", desc: "Redacta descripciones automáticas para tus productos con ayuda de IA." },
-                { icon: Zap, title: "Sin programación", desc: "Todo se administra desde tu panel visual. Cero código, 100% intuitivo." }
+                { icon: Smartphone, title: "Hecho para Venezuela", desc: "Moneda dual, pasarelas locales y métodos de entrega pensados para el mercado nacional." },
+                { icon: Store, title: "Expansión con Revendedores", desc: "Multiplica tu alcance permitiendo que otros vendan por ti con catálogos replicados." },
+                { icon: Bot, title: "IA Integrada", desc: "Olvídate de pensar qué escribir. Nuestra IA redacta descripciones persuasivas automáticamente." },
+                { icon: Zap, title: "Gestión Intuitiva", desc: "Panel de control visual, estadísticas en tiempo real y cero código. Maneja tu negocio desde el celular." }
               ].map((adv, idx) => (
                 <motion.div 
                   key={idx}
@@ -267,8 +243,8 @@ const LandingPage = () => {
               className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto"
             >
               {[
-                { name: "María R.", role: "Emprendedora de repostería, Caracas", quote: "Antes anotaba todo en un cuaderno y perdía muchísimo tiempo. Con MiCatálogo mis clientes ven todo súper claro y me compran más rápido." },
-                { name: "Luis C.", role: "Vendedor de zapatos, Valencia", quote: "Poder recibir el resumen de la compra en WhatsApp y con la tasa BCV del día ya calculada no tiene precio. Me ha salvado la vida." }
+                { name: "María R.", role: "Emprendedora de repostería, Caracas", quote: "Antes perdía horas pasando fotos por WhatsApp y calculando precios. Con MiCatálogo, mis clientes ven todo actualizado, piden directo y yo solo me encargo de cocinar." },
+                { name: "Luis C.", role: "Distribuidor de calzado, Valencia", quote: "El sistema de tasa BCV automática y la opción de tener revendedores disparó mis ventas en un 40%. Es la inversión más rentable que he hecho." }
               ].map((testi, idx) => (
                 <motion.div 
                   key={idx}
@@ -308,8 +284,8 @@ const LandingPage = () => {
             viewport={{ once: true }}
             className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10"
           >
-            <h2 className="text-4xl sm:text-5xl font-black mb-6">Empieza hoy y lleva tu negocio al siguiente nivel</h2>
-            <p className="text-xl text-gray-300 mb-10">Más de 500 comercios en Venezuela ya confían en MiCatálogo.</p>
+            <h2 className="text-4xl sm:text-5xl font-black mb-6">El momento de digitalizar tu negocio es ahora</h2>
+            <p className="text-xl text-gray-300 mb-10">Únete a cientos de emprendedores que ya venden más trabajando menos.</p>
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="inline-block">
               <Link to="/admin/login" className="inline-flex px-10 py-5 rounded-xl bg-accent hover:bg-accentHover text-white font-bold text-lg transition-all shadow-[0_0_30px_rgba(16,185,129,0.5)] hover:shadow-[0_0_50px_rgba(16,185,129,0.8)]">
                 Probar ahora gratis
@@ -319,19 +295,7 @@ const LandingPage = () => {
         </motion.div>
 
         {/* Footer */}
-        <footer className="py-12 border-t border-white/10 bg-[#080808]">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <div className="flex justify-center mb-6">
-              <span className="text-2xl font-bold tracking-tight text-white/50 hover:text-white transition-colors">Mi<span className="text-accent">Catálogo</span></span>
-            </div>
-            <p className="text-sm text-gray-500 mb-6">© 2026 MiCatálogo Venezuela. Todos los derechos reservados.</p>
-            <div className="flex justify-center space-x-6 text-sm text-gray-400">
-              <a href="#" className="hover:text-white transition-colors">Términos y Condiciones</a>
-              <a href="#" className="hover:text-white transition-colors">Políticas de privacidad</a>
-              <a href="#" className="hover:text-white transition-colors">Contacto</a>
-            </div>
-          </div>
-        </footer>
+        <PublicFooter />
       </div>
     </div>
   );
