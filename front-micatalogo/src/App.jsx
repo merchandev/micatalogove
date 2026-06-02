@@ -14,6 +14,7 @@ function App() {
       <CartProvider>
         <Router>
           <Routes>
+            <Route path="/" element={<Navigate to="/admin/login" replace />} />
             <Route path="/tienda/:domain" element={<StoreFront />} />
             
             {/* Admin Routes */}
