@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Post;
+use App\Support\BlogHtmlSanitizer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
@@ -16,10 +17,7 @@ class PostController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
-            'title' => 'required|string|max:255',
-            'content' => 'required|string',
-        ]);
+        $this->validatePost($request);
 
         $slug = Str::slug($request->title);
         // Ensure unique slug
@@ -52,10 +50,7 @@ class PostController extends Controller
     {
         $post = Post::findOrFail($id);
 
-        $request->validate([
-            'title' => 'required|string|max:255',
-            'content' => 'required|string',
-        ]);
+        $this->validatePost($request);
 
         $data = $request->only(['title', 'excerpt', 'content', 'featured_image', 'status']);
         
@@ -75,6 +70,20 @@ class PostController extends Controller
         $post->update($data);
 
         return response()->json($post);
+    }
+
+    private function validatePost(Request $request): array
+    {
+        return $request->validate([
+            'title' => 'required|string|max:255',
+            'excerpt' => 'nullable|string|max:1000',
+            'content' => 'required|string|max:'.BlogHtmlSanitizer::MAX_LENGTH,
+            'featured_image' => 'nullable|url:http,https|max:2048',
+            'status' => 'nullable|in:draft,published',
+        ], [
+            'featured_image.url' => 'La imagen destacada debe ser una URL http o https.',
+            'content.max' => 'El contenido es demasiado largo.',
+        ]);
     }
 
     public function destroy($id)

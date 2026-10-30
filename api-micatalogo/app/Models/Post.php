@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Support\BlogHtmlSanitizer;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -23,6 +25,12 @@ class Post extends Model
     protected $casts = [
         'published_at' => 'datetime',
     ];
+
+    /** Every write path stores allow-listed HTML only. */
+    protected function content(): Attribute
+    {
+        return Attribute::make(set: fn (?string $value) => BlogHtmlSanitizer::clean($value));
+    }
 
     public function user()
     {
