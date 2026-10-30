@@ -30,7 +30,7 @@ export default function VerifyEmail() {
   const Icon = state.status === 'error' ? XCircle : CheckCircle;
 
   return (
-    <div className="min-h-screen bg-[#060A08] flex items-center justify-center p-4 text-white">
+    <div className="auth-page min-h-screen bg-[#060A08] flex items-center justify-center p-4 text-white">
       <div className="max-w-md w-full bg-[#0D1310] border border-white/10 rounded-2xl p-8 shadow-2xl text-center">
         <Icon className={`w-12 h-12 mx-auto mb-6 ${state.status === 'error' ? 'text-red-400' : 'text-accent'}`} />
         <h1 className="text-2xl font-black mb-3">Confirmación de correo</h1>

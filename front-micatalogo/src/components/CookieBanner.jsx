@@ -40,7 +40,7 @@ export default function CookieBanner() {
   };
 
   return (
-    <>
+    <div className="cookie-ui">
       <AnimatePresence>
         {isVisible && !showSettings && (
           <motion.div 
@@ -159,6 +159,6 @@ export default function CookieBanner() {
           </div>
         )}
       </AnimatePresence>
-    </>
+    </div>
   );
 }

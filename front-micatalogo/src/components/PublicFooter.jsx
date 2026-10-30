@@ -1,30 +1,5 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
 
-const PublicFooter = () => {
-  return (
-    <footer className="py-12 border-t border-white/10 bg-[#080808] text-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-        <div className="flex justify-center mb-6">
-          <Link to="/" className="text-2xl font-bold tracking-tight text-white/50 hover:text-white transition-colors">
-            Mi<span className="text-accent">Catálogo</span>
-          </Link>
-        </div>
-        <p className="text-sm text-gray-500 mb-6">© 2026 MiCatálogo Venezuela, C.A. Todos los derechos reservados.</p>
-        <div className="flex justify-center space-x-6 text-sm text-gray-400 mb-6">
-          <Link to="/terminos" className="hover:text-white transition-colors">Términos y Condiciones</Link>
-          <Link to="/aviso-legal" className="hover:text-white transition-colors">Aviso Legal</Link>
-          <Link to="/cookies" className="hover:text-white transition-colors">Política de Cookies</Link>
-          <Link to="/contacto" className="hover:text-white transition-colors">Contacto</Link>
-        </div>
-        <div className="flex justify-center space-x-6 text-sm text-gray-400">
-          <a href="#" className="hover:text-white transition-colors">Instagram</a>
-          <a href="#" className="hover:text-white transition-colors">TikTok</a>
-          <a href="#" className="hover:text-white transition-colors">Facebook</a>
-        </div>
-      </div>
-    </footer>
-  );
-};
-
-export default PublicFooter;
+export default function PublicFooter() {
+  return <footer className="site-footer"><div className="footer-main"><div><Link to="/" className="wordmark"><span className="brand-mark">m.</span>MiCatálogo.</Link><p>Tu negocio tiene mucho que mostrar.<br />Dale un lugar propio.</p></div><div className="footer-links"><Link to="/demos">Diseños de tienda</Link><Link to="/planes">Plan y precio</Link><Link to="/contacto">Contacto</Link><Link to="/admin/login">Entrar al panel</Link></div></div><div className="footer-bottom"><span>© {new Date().getFullYear()} MiCatálogo · Venezuela</span><div><Link to="/terminos">Términos</Link><Link to="/aviso-legal">Aviso legal</Link><Link to="/cookies">Cookies</Link></div><span>Hecho para negocios reales.</span></div></footer>;
+}

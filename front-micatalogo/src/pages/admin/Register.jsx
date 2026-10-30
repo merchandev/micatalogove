@@ -114,7 +114,7 @@ export default function Register() {
   const submitDisabled = loading || domainChecking || domainUnavailable;
 
   return (
-    <div className="min-h-screen bg-[#060A08] flex items-center justify-center p-4">
+    <div className="auth-page min-h-screen bg-[#060A08] flex items-center justify-center p-4">
       <div className="max-w-md w-full bg-[#0D1310] border border-white/10 rounded-2xl p-8 shadow-2xl relative overflow-hidden">
         {/* Decoración */}
         <div className="absolute top-0 right-0 w-64 h-64 bg-accent/10 rounded-full blur-3xl -mr-32 -mt-32 pointer-events-none"></div>

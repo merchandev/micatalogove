@@ -43,10 +43,10 @@ export default function AdminLayout() {
     };
 
     return (
-        <div className="flex min-h-screen bg-bgDark">
+        <div className="workspace-shell flex min-h-screen bg-bgDark">
             <aside className="w-64 bg-[#111116] border-r border-borderDark flex flex-col">
                 <div className="p-6 border-b border-borderDark">
-                    <h2 className="text-2xl font-bold text-white">MiCatalogo</h2>
+                    <Link to="/admin/dashboard" className="workspace-brand"><span className="brand-mark">m.</span>MiCatálogo.</Link>
                     <p className="text-sm text-gray-400 mt-1">{ROLE_LABELS[user?.role] || 'Panel'}</p>
                 </div>
 

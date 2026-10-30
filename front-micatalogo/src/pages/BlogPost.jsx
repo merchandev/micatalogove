@@ -28,7 +28,7 @@ export default function BlogPost() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#060A08] flex items-center justify-center">
+      <div className="marketing-site legacy-page min-h-screen bg-[#060A08] flex items-center justify-center">
         <div className="text-white">Cargando artículo...</div>
       </div>
     );
@@ -36,7 +36,7 @@ export default function BlogPost() {
 
   if (error || !post) {
     return (
-      <div className="min-h-screen bg-[#060A08] flex flex-col items-center justify-center">
+      <div className="marketing-site legacy-page min-h-screen bg-[#060A08] flex flex-col items-center justify-center">
         <h1 className="text-3xl text-white mb-4">404</h1>
         <p className="text-gray-400 mb-6">{error}</p>
         <Link to="/blog" className="text-accent hover:underline">Volver al Blog</Link>
@@ -45,7 +45,7 @@ export default function BlogPost() {
   }
 
   return (
-    <div className="min-h-screen bg-[#060A08] text-white font-sans selection:bg-accent selection:text-white flex flex-col">
+    <div className="marketing-site legacy-page min-h-screen bg-[#060A08] text-white font-sans selection:bg-accent selection:text-white flex flex-col">
       <PublicNavbar />
       
       <div className="flex-grow pt-32 pb-24 w-full">

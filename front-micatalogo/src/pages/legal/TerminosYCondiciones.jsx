@@ -4,7 +4,7 @@ import PublicFooter from '../../components/PublicFooter';
 
 export default function TerminosYCondiciones() {
   return (
-    <div className="min-h-screen bg-[#060A08] text-white font-sans selection:bg-accent selection:text-white flex flex-col">
+    <div className="marketing-site legacy-page min-h-screen bg-[#060A08] text-white font-sans selection:bg-accent selection:text-white flex flex-col">
       <PublicNavbar />
       
       <div className="flex-grow pt-32 pb-20 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 w-full">

@@ -26,15 +26,16 @@ export default function Login() {
     };
 
     return (
-        <div className="min-h-screen flex text-white font-sans selection:bg-accent selection:text-white">
+        <div className="auth-page min-h-screen flex text-white font-sans selection:bg-accent selection:text-white">
             {/* Left Panel */}
-            <div className="hidden lg:flex lg:w-1/2 relative bg-[#040C08] items-center justify-center overflow-hidden">
+            <div className="auth-story hidden lg:flex lg:w-1/2 relative bg-[#040C08] items-center justify-center overflow-hidden">
                 {/* Glow effect */}
-                <div className="absolute w-[800px] h-[800px] bg-accent/10 blur-[150px] rounded-full pointer-events-none"></div>
-                <div className="relative z-10 text-center px-12">
-                    <h1 className="text-5xl font-extrabold mb-6">Domina tus ventas</h1>
+
+                <div className="relative z-10 text-left px-12">
+                    <h1 className="text-5xl font-extrabold mb-6">Tu negocio,
+tu espacio.</h1>
                     <p className="text-gray-400 text-lg max-w-md mx-auto leading-relaxed">
-                        El estándar de la élite comercial. Empieza a vender sin comisiones desde tu propia plataforma conectada a WhatsApp.
+                        Tus productos, pedidos y conversaciones en un mismo lugar. Un poco más de orden para el día a día.
                     </p>
                 </div>
             </div>
@@ -44,13 +45,13 @@ export default function Login() {
                 <div className="w-full max-w-md space-y-8">
                     {/* Logo */}
                     <div className="mb-10">
-                        <Link to="/" className="text-2xl font-bold tracking-tight text-white hover:text-accent transition-colors">
-                            Mi<span className="text-accent">Catálogo</span>
+                        <Link to="/" className="wordmark">
+                            <span className="brand-mark">m.</span>MiCatálogo.
                         </Link>
                     </div>
 
                     <div>
-                        <h2 className="text-3xl font-extrabold mb-2">Bienvenido de vuelta</h2>
+                        <h2 className="text-3xl font-extrabold mb-2">Qué bueno verte.</h2>
                         <p className="text-gray-400 text-sm">Ingresa tus credenciales para acceder a tu panel.</p>
                     </div>
 
@@ -68,9 +69,9 @@ export default function Login() {
 
                     <form onSubmit={handleSubmit} className="space-y-5">
                         <div className="space-y-1.5">
-                            <label className="block text-sm font-medium text-gray-300">Correo Electrónico</label>
+                            <label htmlFor="login-email" className="block text-sm font-medium text-gray-300">Correo electrónico</label>
                             <input 
-                                type="email" 
+                                id="login-email" autoComplete="email" type="email"
                                 className="w-full bg-[#0a0a0a] text-white border border-white/10 rounded-lg px-4 py-3 focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent transition-all"
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
@@ -78,10 +79,10 @@ export default function Login() {
                             />
                         </div>
                         <div className="space-y-1.5">
-                            <label className="block text-sm font-medium text-gray-300">Contraseña</label>
+                            <label htmlFor="login-password" className="block text-sm font-medium text-gray-300">Contraseña</label>
                             <div className="relative">
                                 <input 
-                                    type={showPassword ? "text" : "password"}
+                                    id="login-password" autoComplete="current-password" type={showPassword ? "text" : "password"}
                                     className="w-full bg-[#0a0a0a] text-white border border-white/10 rounded-lg px-4 py-3 pr-12 focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent transition-all"
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
@@ -90,6 +91,7 @@ export default function Login() {
                                 <button
                                     type="button"
                                     onClick={() => setShowPassword(!showPassword)}
+                                    aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
                                     className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-500 hover:text-gray-300 transition-colors"
                                 >
                                     {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
