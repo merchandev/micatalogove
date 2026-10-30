@@ -49,11 +49,6 @@ const LandingPage = () => {
             variants={staggerContainer}
             className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center"
           >
-            <motion.div variants={fadeUp} className="inline-flex items-center px-4 py-2 rounded-full border border-accent/30 bg-accent/10 mb-8">
-              <span className="w-2 h-2 rounded-full bg-accent animate-pulse mr-2"></span>
-              <span className="text-xs font-medium text-accent">Pagos en bolívares</span>
-            </motion.div>
-            
             <motion.h1 variants={fadeUp} className="text-5xl sm:text-7xl font-extrabold tracking-tight mb-6">
               Multiplica tus ventas por WhatsApp, <br/>
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent to-emerald-300 drop-shadow-[0_0_20px_rgba(16,185,129,0.3)]">
@@ -62,7 +57,7 @@ const LandingPage = () => {
             </motion.h1>
             
             <motion.p variants={fadeUp} className="mt-4 max-w-2xl text-lg sm:text-xl text-gray-400 mx-auto mb-10">
-              Crea tu catálogo interactivo en minutos. Recibe los pedidos listos para cobrar por Pago Móvil, Zelle o Efectivo, sin pagar comisiones por venta.
+              Pagos en bolívares
             </motion.p>
             
             <motion.div variants={fadeUp} className="flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-4">
