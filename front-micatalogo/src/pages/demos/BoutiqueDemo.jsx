@@ -1,28 +1,22 @@
-import React, { useState } from 'react';
+
 import { ShoppingBag, Search, Menu, X, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 
-export default function BoutiqueDemo() {
-  const [isCartOpen, setIsCartOpen] = useState(false);
-  const [cart, setCart] = useState([]);
-  
-  const products = [
-    { id: 1, name: 'Vestido Seda Noir', price: 120, category: 'Vestidos', image: 'https://images.unsplash.com/photo-1539008835657-9e8e9680c956?auto=format&fit=crop&q=80&w=800' },
-    { id: 2, name: 'Blusa Crepé Blanca', price: 65, category: 'Blusas', image: 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&q=80&w=800' },
-    { id: 3, name: 'Pantalón Lino Beige', price: 85, category: 'Pantalones', image: 'https://images.unsplash.com/photo-1509631179647-0177331693ae?auto=format&fit=crop&q=80&w=800' },
-    { id: 4, name: 'Bolso Cuero Clásico', price: 150, category: 'Accesorios', image: 'https://images.unsplash.com/photo-1584916201218-f4242ceb4809?auto=format&fit=crop&q=80&w=800' },
-    { id: 5, name: 'Abrigo Lana Camel', price: 190, category: 'Abrigos', image: 'https://images.unsplash.com/photo-1539533113208-f6df8cc8b543?auto=format&fit=crop&q=80&w=800' },
-    { id: 6, name: 'Zapatos Tacón Nude', price: 95, category: 'Calzado', image: 'https://images.unsplash.com/photo-1543163521-1bf539c55dd2?auto=format&fit=crop&q=80&w=800' },
-  ];
-
-  const addToCart = (product) => {
-    setCart([...cart, product]);
-    setIsCartOpen(true);
-  };
-
-  const total = cart.reduce((sum, item) => sum + item.price, 0);
-
+export default function BoutiqueDemo({ 
+  tenant = null, 
+  domain = '',
+  products = [], 
+  cart = [], 
+  isCartOpen = false, 
+  setIsCartOpen = () => {}, 
+  addToCart = () => {}, 
+  submitCart = () => {}, 
+  total = 0, 
+  contact = { customer_name: '', customer_phone: '' }, 
+  setContact = () => {} 
+}) {
+  const productHref = (product) => domain ? `/${domain}/productos/${product.slug || product.id}` : null;
   return (
     <div className="min-h-screen bg-[#FCFBF8] text-[#2C2C2C] font-serif selection:bg-[#B79A78] selection:text-white">
       {/* Navbar Glassmorphism */}
@@ -31,13 +25,13 @@ export default function BoutiqueDemo() {
           <div className="flex justify-between items-center h-20">
             <div className="flex items-center">
               <Menu className="h-6 w-6 text-[#2C2C2C] cursor-pointer" />
-              <Link to="/demos" className="ml-4 text-xs tracking-widest uppercase text-[#B79A78] hover:text-[#2C2C2C] transition-colors font-sans font-semibold">
+              <Link to="/" className="ml-4 text-xs tracking-widest uppercase text-[#B79A78] hover:text-[#2C2C2C] transition-colors font-sans font-semibold">
                 Volver
               </Link>
             </div>
             
-            <h1 className="text-3xl font-bold tracking-widest text-center absolute left-1/2 -translate-x-1/2">
-              L'ÉLÉGANCE
+            <h1 className="text-3xl font-bold tracking-widest text-center absolute left-1/2 -translate-x-1/2 uppercase">
+              {tenant?.name || "L'ÉLÉGANCE"}
             </h1>
 
             <div className="flex items-center space-x-6">
@@ -75,8 +69,8 @@ export default function BoutiqueDemo() {
             transition={{ delay: 0.5, duration: 0.8 }}
             className="text-center text-white p-8 border border-white/30 backdrop-blur-sm bg-black/10"
           >
-            <p className="font-sans text-xs uppercase tracking-[0.3em] mb-4">Colección Otoño</p>
-            <h2 className="text-5xl md:text-7xl font-bold mb-6 tracking-wide">NUEVA<br/>LLEGADA</h2>
+            <p className="font-sans text-xs uppercase tracking-[0.3em] mb-4">Colección Nueva</p>
+            <h2 className="text-5xl md:text-7xl font-bold mb-6 tracking-wide uppercase">NUEVA<br/>LLEGADA</h2>
             <button className="bg-white text-[#2C2C2C] px-8 py-3 font-sans text-xs uppercase tracking-widest hover:bg-[#B79A78] hover:text-white transition-colors duration-300">
               Descubrir
             </button>
@@ -87,7 +81,7 @@ export default function BoutiqueDemo() {
       {/* Categorías */}
       <div className="max-w-7xl mx-auto px-4 py-16">
         <div className="flex flex-wrap justify-center gap-8 md:gap-16 font-sans text-sm uppercase tracking-widest text-gray-500">
-          {['Todos', 'Vestidos', 'Blusas', 'Pantalones', 'Accesorios'].map((cat, i) => (
+          {['Catálogo Completo'].map((cat, i) => (
             <span key={cat} className={`cursor-pointer transition-colors duration-300 ${i === 0 ? 'text-[#2C2C2C] border-b border-[#2C2C2C] pb-1' : 'hover:text-[#B79A78]'}`}>
               {cat}
             </span>
@@ -97,45 +91,63 @@ export default function BoutiqueDemo() {
 
       {/* Grid de Productos */}
       <div className="max-w-7xl mx-auto px-4 pb-24">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-12">
-          {products.map((product, index) => (
-            <motion.div 
-              key={product.id}
-              initial={{ opacity: 0, y: 50 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-50px" }}
-              transition={{ duration: 0.6, delay: index * 0.1 }}
-              className="group cursor-pointer"
-            >
-              <div className="relative aspect-[3/4] overflow-hidden mb-6 bg-gray-100">
-                <img 
-                  src={product.image} 
-                  alt={product.name} 
-                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                />
-                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300" />
-                
-                <button 
-                  onClick={(e) => { e.stopPropagation(); addToCart(product); }}
-                  className="absolute bottom-0 left-0 w-full bg-[#B79A78] text-white py-4 font-sans text-xs uppercase tracking-widest translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out"
+        {products.length === 0 ? (
+          <div className="text-center py-20 text-gray-400 font-sans tracking-widest uppercase">
+            No hay productos disponibles por el momento.
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-12">
+            {products.map((product, index) => {
+              const outOfStock = Number(product.stock_quantity) <= 0;
+              return (
+                <motion.div 
+                  key={product.id}
+                  initial={{ opacity: 0, y: 50 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: "-50px" }}
+                  transition={{ duration: 0.6, delay: (index % 3) * 0.1 }}
+                  className="group cursor-pointer"
                 >
-                  Añadir a la bolsa
-                </button>
-              </div>
-              <div className="text-center">
-                <p className="font-sans text-[10px] uppercase tracking-widest text-gray-400 mb-2">{product.category}</p>
-                <h3 className="text-lg mb-1 group-hover:text-[#B79A78] transition-colors">{product.name}</h3>
-                <p className="font-sans text-sm tracking-widest">${product.price.toFixed(2)}</p>
-              </div>
-            </motion.div>
-          ))}
-        </div>
+                  <div className="relative aspect-[3/4] overflow-hidden mb-6 bg-gray-100">
+                    <img 
+                      src={product.image_url || 'https://images.unsplash.com/photo-1539008835657-9e8e9680c956?auto=format&fit=crop&q=80&w=800'} 
+                      alt={product.name} 
+                      className={`w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 ${outOfStock ? 'opacity-50 grayscale' : ''}`}
+                    />
+                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300" />
+                    
+                    <button 
+                      onClick={(e) => { 
+                        e.stopPropagation(); 
+                        if(!outOfStock) addToCart(product); 
+                      }}
+                      disabled={outOfStock}
+                      className="absolute bottom-0 left-0 w-full bg-[#B79A78] text-white py-4 font-sans text-xs uppercase tracking-widest translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out disabled:opacity-50"
+                    >
+                      {outOfStock ? 'Agotado' : 'Añadir a la bolsa'}
+                    </button>
+                  </div>
+                  <div className="text-center">
+                    {productHref(product) ? (
+                      <Link to={productHref(product)} className="block text-lg mb-1 group-hover:text-[#B79A78] transition-colors">
+                        {product.name}
+                      </Link>
+                    ) : (
+                      <h3 className="text-lg mb-1 group-hover:text-[#B79A78] transition-colors">{product.name}</h3>
+                    )}
+                    <p className="font-sans text-sm tracking-widest">${Number(product.price).toFixed(2)}</p>
+                  </div>
+                </motion.div>
+              );
+            })}
+          </div>
+        )}
       </div>
 
       {/* Footer Minimalista */}
       <footer className="bg-[#2C2C2C] text-white py-20 text-center">
-        <h2 className="text-2xl font-bold tracking-widest mb-6">L'ÉLÉGANCE</h2>
-        <p className="font-sans text-xs text-gray-400 uppercase tracking-widest mb-8">La belleza en la simplicidad.</p>
+        <h2 className="text-2xl font-bold tracking-widest mb-6 uppercase">{tenant?.name || "L'ÉLÉGANCE"}</h2>
+        <p className="font-sans text-xs text-gray-400 uppercase tracking-widest mb-8">{tenant?.store_description || "La belleza en la simplicidad."}</p>
         <div className="flex justify-center gap-6 font-sans text-xs text-gray-400 uppercase tracking-widest">
           <span className="hover:text-white cursor-pointer transition-colors">Instagram</span>
           <span className="hover:text-white cursor-pointer transition-colors">Pinterest</span>
@@ -175,21 +187,41 @@ export default function BoutiqueDemo() {
                     Tu bolsa está vacía.
                   </div>
                 ) : (
-                  cart.map((item, index) => (
-                    <motion.div 
-                      initial={{ opacity: 0, x: 20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: index * 0.1 }}
-                      key={index} 
-                      className="flex gap-4"
-                    >
-                      <img src={item.image} className="w-24 h-32 object-cover" alt={item.name} />
-                      <div className="flex-1 flex flex-col justify-center">
-                        <h4 className="text-lg mb-1">{item.name}</h4>
-                        <p className="font-sans text-sm text-gray-500 tracking-widest">${item.price.toFixed(2)}</p>
-                      </div>
-                    </motion.div>
-                  ))
+                  <>
+                    {cart.map((item, index) => (
+                      <motion.div 
+                        initial={{ opacity: 0, x: 20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: index * 0.1 }}
+                        key={`${item.id}-${index}`} 
+                        className="flex gap-4"
+                      >
+                        <img src={item.image_url || 'https://images.unsplash.com/photo-1539008835657-9e8e9680c956?auto=format&fit=crop&q=80&w=800'} className="w-24 h-32 object-cover" alt={item.name} />
+                        <div className="flex-1 flex flex-col justify-center">
+                          <h4 className="text-lg mb-1">{item.name}</h4>
+                          <p className="font-sans text-sm text-gray-500 tracking-widest">
+                            {item.quantity} x ${Number(item.price).toFixed(2)}
+                          </p>
+                        </div>
+                      </motion.div>
+                    ))}
+                    <div className="space-y-4 pt-4 border-t border-gray-200">
+                      <input 
+                        type="text"
+                        placeholder="Tu Nombre"
+                        value={contact.customer_name}
+                        onChange={(e) => setContact({...contact, customer_name: e.target.value})}
+                        className="w-full border-b border-gray-300 py-2 bg-transparent focus:outline-none focus:border-[#B79A78] font-sans text-sm"
+                      />
+                      <input 
+                        type="tel"
+                        placeholder="Tu Teléfono (para seguimiento)"
+                        value={contact.customer_phone}
+                        onChange={(e) => setContact({...contact, customer_phone: e.target.value})}
+                        className="w-full border-b border-gray-300 py-2 bg-transparent focus:outline-none focus:border-[#B79A78] font-sans text-sm"
+                      />
+                    </div>
+                  </>
                 )}
               </div>
               
@@ -197,10 +229,13 @@ export default function BoutiqueDemo() {
                 <div className="p-6 bg-white border-t border-gray-100">
                   <div className="flex justify-between items-center mb-6 font-sans">
                     <span className="text-sm uppercase tracking-widest text-gray-500">Subtotal</span>
-                    <span className="text-lg tracking-widest">${total.toFixed(2)}</span>
+                    <span className="text-lg tracking-widest">${Number(total).toFixed(2)}</span>
                   </div>
-                  <button className="w-full bg-[#2C2C2C] hover:bg-[#B79A78] text-white py-4 font-sans text-xs uppercase tracking-widest transition-colors flex justify-center items-center gap-2 group">
-                    Proceder al pago <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                  <button 
+                    onClick={submitCart}
+                    className="w-full bg-[#2C2C2C] hover:bg-[#B79A78] text-white py-4 font-sans text-xs uppercase tracking-widest transition-colors flex justify-center items-center gap-2 group"
+                  >
+                    Proceder a WhatsApp <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                   </button>
                 </div>
               )}
