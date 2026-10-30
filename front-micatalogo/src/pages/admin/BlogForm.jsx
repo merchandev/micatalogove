@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
-import axios from 'axios';
 import { ArrowLeft, Save } from 'lucide-react';
-import ReactQuill from 'react-quill';
-import 'react-quill/dist/quill.snow.css';
+import RichTextEditor from '../../components/RichTextEditor';
+import api from '../../api';
 
 export default function BlogForm() {
   const { id } = useParams();
@@ -20,47 +19,27 @@ export default function BlogForm() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const modules = {
-    toolbar: [
-      [{ 'header': [1, 2, 3, false] }],
-      ['bold', 'italic', 'underline', 'strike', 'blockquote'],
-      [{'list': 'ordered'}, {'list': 'bullet'}, {'indent': '-1'}, {'indent': '+1'}],
-      ['link', 'image', 'video'],
-      ['clean']
-    ],
-  };
-
   useEffect(() => {
-    if (isEdit) {
-      fetchPost();
-    }
-  }, [id]);
-
-  const fetchPost = async () => {
-    try {
-      const token = localStorage.getItem('auth_token');
-      const response = await axios.get(`http://localhost:8000/api/admin/posts/${id}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      setFormData({
-        title: response.data.title,
-        excerpt: response.data.excerpt || '',
-        content: response.data.content,
-        featured_image: response.data.featured_image || '',
-        status: response.data.status
-      });
-    } catch (err) {
-      setError('Error al cargar la publicación.');
-    }
-  };
+    if (!isEdit) return;
+    api.get(`/admin/posts/${id}`)
+      .then(({ data }) => setFormData({
+        title: data.title,
+        excerpt: data.excerpt || '',
+        content: data.content,
+        featured_image: data.featured_image || '',
+        status: data.status
+      }))
+      .catch(() => setError('Error al cargar la publicación.'));
+  }, [id, isEdit]);
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setFormData((current) => ({ ...current, [name]: value }));
   };
 
-  const handleContentChange = (content) => {
-    setFormData({ ...formData, content });
-  };
+  const handleContentChange = useCallback((content) => {
+    setFormData((current) => ({ ...current, content }));
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -68,18 +47,16 @@ export default function BlogForm() {
     setError('');
 
     try {
-      const token = localStorage.getItem('auth_token');
-      const config = { headers: { Authorization: `Bearer ${token}` } };
-      
       if (isEdit) {
-        await axios.put(`http://localhost:8000/api/admin/posts/${id}`, formData, config);
+        await api.put(`/admin/posts/${id}`, formData);
       } else {
-        await axios.post('http://localhost:8000/api/admin/posts', formData, config);
+        await api.post('/admin/posts', formData);
       }
       
       navigate('/admin/blog');
     } catch (err) {
-      setError('Error al guardar la publicación. Verifique los datos.');
+      const errors = err.response?.data?.errors;
+      setError(errors ? Object.values(errors).flat().join(' ') : 'Error al guardar la publicación. Verifique los datos.');
     } finally {
       setLoading(false);
     }
@@ -116,7 +93,7 @@ export default function BlogForm() {
             <div>
               <label className="block text-sm font-medium text-gray-400 mb-1">URL de Imagen Destacada</label>
               <input
-                type="text"
+                type="url"
                 name="featured_image"
                 value={formData.featured_image}
                 onChange={handleChange}
@@ -181,11 +158,10 @@ export default function BlogForm() {
               .quill-editor-wrapper .ql-fill { fill: #9ca3af; }
               .quill-editor-wrapper .ql-picker { color: #9ca3af; }
             `}</style>
-            <ReactQuill 
-              theme="snow" 
-              modules={modules}
-              value={formData.content} 
-              onChange={handleContentChange} 
+            <RichTextEditor
+              value={formData.content}
+              onChange={handleContentChange}
+              placeholder="Escribe el contenido de la publicación..."
             />
           </div>
         </div>

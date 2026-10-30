@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import axios from 'axios';
 import PublicNavbar from '../components/PublicNavbar';
 import PublicFooter from '../components/PublicFooter';
 import { Calendar, User, ArrowRight } from 'lucide-react';
+import api from '../api';
 
 export default function BlogIndex() {
   const [posts, setPosts] = useState([]);
@@ -15,7 +15,7 @@ export default function BlogIndex() {
 
   const fetchPosts = async () => {
     try {
-      const response = await axios.get('http://localhost:8000/api/posts');
+      const response = await api.get('/posts');
       setPosts(response.data);
     } catch (error) {
       console.error('Error fetching public posts:', error);
