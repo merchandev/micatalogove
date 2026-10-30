@@ -6,7 +6,24 @@ use Illuminate\Database\Eloquent\Model;
 
 class Product extends Model
 {
-    protected $fillable = ['tenant_id', 'category_id', 'name', 'description', 'price', 'image_url', 'status'];
+    protected $fillable = [
+        'tenant_id',
+        'category_id',
+        'name',
+        'description',
+        'sku',
+        'price',
+        'stock_quantity',
+        'low_stock_threshold',
+        'image_url',
+        'status',
+    ];
+
+    protected $casts = [
+        'price' => 'decimal:2',
+        'stock_quantity' => 'integer',
+        'low_stock_threshold' => 'integer',
+    ];
 
     public function tenant()
     {
@@ -21,5 +38,10 @@ class Product extends Model
     public function variants()
     {
         return $this->hasMany(ProductVariant::class);
+    }
+
+    public function orderItems()
+    {
+        return $this->hasMany(OrderItem::class);
     }
 }

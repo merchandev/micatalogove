@@ -16,6 +16,8 @@ class TenantResource extends JsonResource
             'whatsapp_number' => $this->whatsapp_number,
             'store_description' => $this->store_description,
             'store_logo' => $this->store_logo,
+            'theme' => $this->theme,
+            'status' => $this->status,
         ];
     }
 }
