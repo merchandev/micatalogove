@@ -29,7 +29,7 @@ const PublicNavbar = () => {
           </div>
           <div className="flex items-center space-x-6">
             <Link to="/admin/login" className="text-sm font-medium text-gray-300 hover:text-white transition-colors">Ingresar</Link>
-            <Link to="/admin/login" className="px-5 py-2.5 rounded-lg bg-accent hover:bg-accentHover text-white text-sm font-semibold transition-all shadow-[0_0_15px_rgba(16,185,129,0.4)] hover:shadow-[0_0_25px_rgba(16,185,129,0.6)]">
+            <Link to="/register" className="px-5 py-2.5 rounded-lg bg-accent hover:bg-accentHover text-white text-sm font-semibold transition-all shadow-[0_0_15px_rgba(16,185,129,0.4)] hover:shadow-[0_0_25px_rgba(16,185,129,0.6)]">
               Crear tienda
             </Link>
             <button className="text-gray-300 hover:text-white transition-colors">

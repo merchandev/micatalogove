@@ -67,8 +67,8 @@ const LandingPage = () => {
             
             <motion.div variants={fadeUp} className="flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-4">
               <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                <Link to="/admin/login" className="block w-full sm:w-auto px-8 py-4 rounded-xl bg-accent hover:bg-accentHover text-white font-semibold transition-all shadow-[0_0_20px_rgba(16,185,129,0.5)] hover:shadow-[0_0_30px_rgba(16,185,129,0.7)]">
-                  Comienza totalmente gratis
+                <Link to="/register" className="block w-full sm:w-auto px-8 py-4 rounded-xl bg-accent hover:bg-accentHover text-white font-semibold transition-all shadow-[0_0_20px_rgba(16,185,129,0.5)] hover:shadow-[0_0_30px_rgba(16,185,129,0.7)]">
+                  Prueba 7 días gratis
                 </Link>
               </motion.div>
               <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
@@ -198,7 +198,7 @@ const LandingPage = () => {
               className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8"
             >
               {[
-                { step: "1", title: "Regístrate gratis", desc: "Crea tu cuenta en menos de un minuto.", color: "from-emerald-400 to-accent" },
+                { step: "1", title: "Prueba 7 días", desc: "Crea tu tienda. Después, USD 5 al mes.", color: "from-emerald-400 to-accent" },
                 { step: "2", title: "Añade productos", desc: "Fotos, precios y descripciones. Así de fácil.", color: "from-blue-400 to-indigo-500" },
                 { step: "3", title: "Comparte enlace", desc: "Tus clientes lo abren desde su celular.", color: "from-purple-400 to-pink-500" },
                 { step: "4", title: "Recibe y cobra", desc: "Llega el mensaje con resumen al chat.", color: "from-orange-400 to-yellow-500" }
@@ -287,8 +287,8 @@ const LandingPage = () => {
             <h2 className="text-4xl sm:text-5xl font-black mb-6">El momento de digitalizar tu negocio es ahora</h2>
             <p className="text-xl text-gray-300 mb-10">Únete a cientos de emprendedores que ya venden más trabajando menos.</p>
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="inline-block">
-              <Link to="/admin/login" className="inline-flex px-10 py-5 rounded-xl bg-accent hover:bg-accentHover text-white font-bold text-lg transition-all shadow-[0_0_30px_rgba(16,185,129,0.5)] hover:shadow-[0_0_50px_rgba(16,185,129,0.8)]">
-                Probar ahora gratis
+              <Link to="/register" className="inline-flex px-10 py-5 rounded-xl bg-accent hover:bg-accentHover text-white font-bold text-lg transition-all shadow-[0_0_30px_rgba(16,185,129,0.5)] hover:shadow-[0_0_50px_rgba(16,185,129,0.8)]">
+                Crear mi tienda · 7 días gratis
               </Link>
             </motion.div>
           </motion.div>
