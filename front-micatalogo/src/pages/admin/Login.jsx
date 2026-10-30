@@ -1,13 +1,17 @@
 import { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { Eye, EyeOff } from 'lucide-react';
 
 export default function Login() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
     const [error, setError] = useState(null);
     const { login } = useAuth();
     const navigate = useNavigate();
+    const [searchParams] = useSearchParams();
+    const sessionExpired = searchParams.get('session') === 'expired';
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -16,7 +20,8 @@ export default function Login() {
             await login(email, password);
             navigate('/admin/dashboard');
         } catch (err) {
-            setError('Credenciales inválidas o error en el servidor');
+            const message = err.response?.data?.message || 'Credenciales inválidas o error en el servidor';
+            setError(message);
         }
     };
 
@@ -49,8 +54,14 @@ export default function Login() {
                         <p className="text-gray-400 text-sm">Ingresa tus credenciales para acceder a tu panel.</p>
                     </div>
 
+                    {sessionExpired && !error && (
+                        <div role="status" className="bg-amber-500/10 border border-amber-500/40 text-amber-300 p-3 rounded-lg text-sm">
+                            Tu sesión expiró o fue cerrada. Inicia sesión nuevamente.
+                        </div>
+                    )}
+
                     {error && (
-                        <div className="bg-red-500/10 border border-red-500/50 text-red-400 p-3 rounded-lg text-sm">
+                        <div role="alert" className="bg-red-500/10 border border-red-500/50 text-red-400 p-3 rounded-lg text-sm">
                             {error}
                         </div>
                     )}
@@ -68,13 +79,22 @@ export default function Login() {
                         </div>
                         <div className="space-y-1.5">
                             <label className="block text-sm font-medium text-gray-300">Contraseña</label>
-                            <input 
-                                type="password" 
-                                className="w-full bg-[#0a0a0a] text-white border border-white/10 rounded-lg px-4 py-3 focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent transition-all"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                required
-                            />
+                            <div className="relative">
+                                <input 
+                                    type={showPassword ? "text" : "password"}
+                                    className="w-full bg-[#0a0a0a] text-white border border-white/10 rounded-lg px-4 py-3 pr-12 focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent transition-all"
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    required
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => setShowPassword(!showPassword)}
+                                    className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-500 hover:text-gray-300 transition-colors"
+                                >
+                                    {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                                </button>
+                            </div>
                         </div>
                         <button 
                             type="submit" 

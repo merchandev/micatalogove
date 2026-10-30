@@ -1,8 +1,7 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import api from '../../api';
-import { Mail, Lock, User, Store, Globe, Palette, AlertCircle, ArrowRight, CheckCircle } from 'lucide-react';
-import { useAuth } from '../../context/AuthContext';
+import { Mail, Lock, User, Store, Globe, Palette, AlertCircle, ArrowRight, CheckCircle, ChevronDown, Eye, EyeOff } from 'lucide-react';
 
 export default function Register() {
   const [formData, setFormData] = useState({
@@ -16,8 +15,11 @@ export default function Register() {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [domainChecking, setDomainChecking] = useState(false);
+  const [domainCheck, setDomainCheck] = useState(null);
+  const [domainTouched, setDomainTouched] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
-  const { registerLogin } = useAuth();
 
   const themes = [
     { id: 'boutique-demo', name: 'Boutique de Ropa' },
@@ -27,21 +29,89 @@ export default function Register() {
     { id: 'minimal-demo', name: 'Minimalista Clásico' }
   ];
 
+  const normalizeDomain = (value) => value
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9-]/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-+|-+$/g, '');
+
+  const validationMessage = (err) => {
+    const errors = err.response?.data?.errors;
+    if (errors) {
+      const firstKey = Object.keys(errors)[0];
+      return errors[firstKey]?.[0] || 'Revisa los datos del formulario.';
+    }
+
+    return err.response?.data?.message || 'Error al registrar. Por favor, intente nuevamente.';
+  };
+
+  useEffect(() => {
+    if (!formData.domain || formData.domain.length < 3) {
+      setDomainCheck(null);
+      setDomainChecking(false);
+      return;
+    }
+
+    setDomainChecking(true);
+    const timeout = setTimeout(async () => {
+      try {
+        const response = await api.get('/domain-availability', {
+          params: { domain: formData.domain },
+        });
+        setDomainCheck(response.data);
+      } catch (err) {
+        setDomainCheck(null);
+      } finally {
+        setDomainChecking(false);
+      }
+    }, 450);
+
+    return () => clearTimeout(timeout);
+  }, [formData.domain]);
+
+  const handleStoreNameChange = (value) => {
+    setFormData((current) => ({
+      ...current,
+      store_name: value,
+      domain: domainTouched ? current.domain : normalizeDomain(value),
+    }));
+  };
+
+  const handleDomainChange = (value) => {
+    setDomainTouched(true);
+    setFormData((current) => ({ ...current, domain: normalizeDomain(value) }));
+  };
+
+  const applySuggestion = (domain) => {
+    setDomainTouched(true);
+    setFormData((current) => ({ ...current, domain }));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+
+    if (domainCheck && !domainCheck.available) {
+      setError('Ese enlace de tienda ya esta ocupado. Elige una sugerencia o escribe otro.');
+      return;
+    }
+
     setLoading(true);
 
     try {
-      const response = await api.post('/register', formData);
-      registerLogin(response.data.user, response.data.token);
+      await api.post('/register', formData);
       setSuccess(true);
     } catch (err) {
-      setError(err.response?.data?.message || 'Error al registrar. Por favor, intente nuevamente.');
+      setError(validationMessage(err));
     } finally {
       setLoading(false);
     }
   };
+
+  const domainUnavailable = domainCheck && !domainCheck.available;
+  const submitDisabled = loading || domainChecking || domainUnavailable;
 
   return (
     <div className="min-h-screen bg-[#060A08] flex items-center justify-center p-4">
@@ -55,17 +125,33 @@ export default function Register() {
             <div className="w-20 h-20 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
               <CheckCircle className="w-10 h-10 text-green-500" />
             </div>
-            <h2 className="text-3xl font-black text-white mb-4">¡Tienda Creada!</h2>
-            <p className="text-gray-400 mb-8">
-              Tu tienda <strong className="text-white">{formData.store_name}</strong> ha sido configurada con éxito. Ya puedes empezar a subir tus productos y personalizarla.
+            <h2 className="text-3xl font-black text-white mb-4">¡Tienda creada exitosamente!</h2>
+            <p className="text-gray-400 mb-4">
+              Tu tienda <strong className="text-white">{formData.store_name}</strong> ya está lista. Te enviamos un correo a <strong className="text-white">{formData.email}</strong>: confírmalo para publicar tu catálogo en:
             </p>
-            <button
-              onClick={() => navigate('/admin/dashboard')}
-              className="w-full py-3 px-4 bg-accent hover:bg-accentHover text-white rounded-xl font-bold transition-all flex justify-center items-center gap-2 group"
+            <a
+              href={`/${formData.domain}`}
+              target="_blank"
+              rel="noreferrer"
+              className="block mb-6 py-2.5 px-4 rounded-xl bg-white/5 border border-white/10 text-accent hover:text-accentHover font-mono text-sm break-all"
             >
-              Ir al Panel de Control
-              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-            </button>
+              {window.location.origin}/{formData.domain}
+            </a>
+            <div className="space-y-3">
+              <button
+                onClick={() => navigate('/admin/login')}
+                className="w-full py-3 px-4 bg-accent hover:bg-accentHover text-white rounded-xl font-bold transition-all flex justify-center items-center gap-2 group"
+              >
+                Ir al inicio de sesión
+                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+              </button>
+              <Link
+                to={`/${formData.domain}`}
+                className="w-full py-3 px-4 bg-white/5 hover:bg-white/10 text-white rounded-xl font-semibold transition-all flex justify-center items-center gap-2"
+              >
+                Ver mi página de catálogo
+              </Link>
+            </div>
           </div>
         ) : (
           <>
@@ -76,8 +162,8 @@ export default function Register() {
                 </div>
                 MiCatálogo
               </Link>
-              <h2 className="text-2xl font-bold text-white mb-2">Crea tu tienda gratis</h2>
-              <p className="text-gray-400 text-sm">Empieza a vender online en minutos.</p>
+              <h2 className="text-2xl font-bold text-white mb-2">Prueba tu tienda durante 7 días</h2>
+              <p className="text-gray-400 text-sm">Después de la prueba, continúa por USD 5 al mes.</p>
             </div>
 
             {error && (
@@ -125,13 +211,20 @@ export default function Register() {
                     <Lock className="h-5 w-5 text-gray-500" />
                   </div>
                   <input
-                    type="password"
+                    type={showPassword ? "text" : "password"}
                     required
-                    className="w-full pl-10 pr-4 py-3 bg-black/50 border border-white/10 rounded-xl focus:ring-2 focus:ring-accent focus:border-transparent text-white placeholder-gray-500 transition-all"
+                    className="w-full pl-10 pr-12 py-3 bg-black/50 border border-white/10 rounded-xl focus:ring-2 focus:ring-accent focus:border-transparent text-white placeholder-gray-500 transition-all"
                     placeholder="Contraseña (mínimo 8 caracteres)"
                     value={formData.password}
                     onChange={(e) => setFormData({...formData, password: e.target.value})}
                   />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-500 hover:text-gray-300 transition-colors"
+                  >
+                    {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                  </button>
                 </div>
               </div>
 
@@ -149,7 +242,7 @@ export default function Register() {
                     className="w-full pl-10 pr-4 py-3 bg-black/50 border border-white/10 rounded-xl focus:ring-2 focus:ring-accent focus:border-transparent text-white placeholder-gray-500 transition-all"
                     placeholder="Nombre de la Tienda"
                     value={formData.store_name}
-                    onChange={(e) => setFormData({...formData, store_name: e.target.value})}
+                    onChange={(e) => handleStoreNameChange(e.target.value)}
                   />
                 </div>
 
@@ -163,9 +256,37 @@ export default function Register() {
                     className="w-full pl-10 pr-4 py-3 bg-black/50 border border-white/10 rounded-xl focus:ring-2 focus:ring-accent focus:border-transparent text-white placeholder-gray-500 transition-all"
                     placeholder="URL (ej: mitienda)"
                     value={formData.domain}
-                    onChange={(e) => setFormData({...formData, domain: e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '')})}
+                    onChange={(e) => handleDomainChange(e.target.value)}
                   />
-                  <p className="mt-1 text-xs text-gray-500 ml-1">Tu enlace será: micatalogo.com/tienda/{formData.domain || '...'}</p>
+                  <p className="mt-1 text-xs text-gray-500 ml-1">Tu enlace será: {window.location.host}/{formData.domain || 'nombre-de-tienda'}</p>
+                  {formData.domain.length > 0 && formData.domain.length < 3 && (
+                    <p className="mt-2 text-xs text-yellow-400 ml-1">La URL debe tener al menos 3 caracteres.</p>
+                  )}
+                  {domainChecking && (
+                    <p className="mt-2 text-xs text-gray-400 ml-1">Verificando disponibilidad...</p>
+                  )}
+                  {!domainChecking && domainCheck?.available && (
+                    <p className="mt-2 text-xs text-green-400 ml-1">Disponible.</p>
+                  )}
+                  {!domainChecking && domainUnavailable && (
+                    <div className="mt-3 space-y-2">
+                      <p className="text-xs text-red-400 ml-1">{domainCheck.message}</p>
+                      {domainCheck.suggestions?.length > 0 && (
+                        <div className="flex flex-wrap gap-2">
+                          {domainCheck.suggestions.map((suggestion) => (
+                            <button
+                              key={suggestion}
+                              type="button"
+                              onClick={() => applySuggestion(suggestion)}
+                              className="px-3 py-1 rounded-full bg-accent/10 border border-accent/30 text-accent text-xs font-semibold hover:bg-accent/20"
+                            >
+                              {suggestion}
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
 
                 <div className="relative">
@@ -174,20 +295,23 @@ export default function Register() {
                   </div>
                   <select
                     required
-                    className="w-full pl-10 pr-4 py-3 bg-black/50 border border-white/10 rounded-xl focus:ring-2 focus:ring-accent focus:border-transparent text-white appearance-none transition-all"
+                    className="w-full pl-10 pr-10 py-3 bg-black/50 border border-white/10 rounded-xl focus:ring-2 focus:ring-accent focus:border-transparent text-white appearance-none transition-all cursor-pointer"
                     value={formData.theme}
                     onChange={(e) => setFormData({...formData, theme: e.target.value})}
                   >
                     {themes.map(theme => (
-                      <option key={theme.id} value={theme.id}>{theme.name}</option>
+                      <option key={theme.id} value={theme.id} className="bg-[#0D1310] text-white py-2">{theme.name}</option>
                     ))}
                   </select>
+                  <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                    <ChevronDown className="h-5 w-5 text-gray-500" />
+                  </div>
                 </div>
               </div>
 
               <button
                 type="submit"
-                disabled={loading}
+                disabled={submitDisabled}
                 className="w-full py-3 px-4 bg-accent hover:bg-accentHover text-white rounded-xl font-bold transition-all mt-4 flex justify-center items-center gap-2 group disabled:opacity-50"
               >
                 {loading ? 'Creando tienda...' : 'Crear Tienda'}

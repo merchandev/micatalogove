@@ -17,4 +17,20 @@ api.interceptors.request.use((config) => {
     return config;
 });
 
+// An expired or revoked token ends the panel session instead of leaving a broken screen.
+api.interceptors.response.use(
+    (response) => response,
+    (error) => {
+        const isLogin = error.config?.url?.endsWith('/login');
+        if (error.response?.status === 401 && !isLogin && localStorage.getItem('micatalogo_token')) {
+            localStorage.removeItem('micatalogo_token');
+            const { pathname } = window.location;
+            if (pathname.startsWith('/admin') && pathname !== '/admin/login') {
+                window.location.assign('/admin/login?session=expired');
+            }
+        }
+        return Promise.reject(error);
+    }
+);
+
 export default api;

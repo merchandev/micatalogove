@@ -16,7 +16,7 @@ export const AuthProvider = ({ children }) => {
                 try {
                     const response = await api.get('/user');
                     setUser(response.data);
-                } catch (error) {
+                } catch {
                     console.error("Token inválido o expirado");
                     localStorage.removeItem('micatalogo_token');
                     setUser(null);
@@ -35,9 +35,12 @@ export const AuthProvider = ({ children }) => {
     };
 
     const logout = async () => {
-        await api.post('/logout');
-        localStorage.removeItem('micatalogo_token');
-        setUser(null);
+        try {
+            await api.post('/logout');
+        } finally {
+            localStorage.removeItem('micatalogo_token');
+            setUser(null);
+        }
     };
 
     const registerLogin = (user, token) => {
