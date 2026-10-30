@@ -51,7 +51,7 @@ const LandingPage = () => {
           >
             <motion.div variants={fadeUp} className="inline-flex items-center px-4 py-2 rounded-full border border-accent/30 bg-accent/10 mb-8">
               <span className="w-2 h-2 rounded-full bg-accent animate-pulse mr-2"></span>
-              <span className="text-xs font-medium text-accent">Lanzamiento oficial</span>
+              <span className="text-xs font-medium text-accent">Pagos en bolívares</span>
             </motion.div>
             
             <motion.h1 variants={fadeUp} className="text-5xl sm:text-7xl font-extrabold tracking-tight mb-6">
