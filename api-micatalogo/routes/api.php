@@ -1,34 +1,95 @@
 <?php
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Api\TenantController;
-use App\Http\Controllers\Api\ProductController;
-use App\Http\Controllers\Api\CategoryController;
-
-use App\Http\Controllers\AuthController;
+use App\Http\Controllers\Admin\AbandonedCartController;
+use App\Http\Controllers\Admin\ConversationController;
+use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\DatabaseAccessController;
+use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\ProductController as AdminProductController;
-use App\Http\Controllers\PostController;
+use App\Http\Controllers\Admin\StoreSettingsController;
+use App\Http\Controllers\Admin\SubscriptionController;
+use App\Http\Controllers\Admin\TenantManagementController;
+use App\Http\Controllers\Admin\UserManagementController;
+use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\PublicPostController;
+use App\Http\Controllers\Api\StorefrontLeadController;
+use App\Http\Controllers\Api\TenantController;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\EmailVerificationController;
+use App\Http\Controllers\PasswordResetController;
+use App\Http\Controllers\PostController;
+use App\Http\Middleware\EnsureSubscriptionAccess;
+use Illuminate\Support\Facades\Route;
 
-Route::post('/register', [AuthController::class, 'register']);
-Route::post('/login', [AuthController::class, 'login']);
+Route::middleware('throttle:public')->get('/plans', fn () => response()->json([
+    'trial_days' => config('plans.trial_days'),
+    'plans' => array_values(config('plans.plans')),
+]));
 
-Route::middleware('auth:sanctum')->group(function () {
+Route::post('/register', [AuthController::class, 'register'])->middleware('throttle:register');
+Route::get('/domain-availability', [AuthController::class, 'domainAvailability'])->middleware('throttle:public');
+Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:login');
+Route::middleware('throttle:password')->group(function () {
+    Route::post('/forgot-password', [PasswordResetController::class, 'forgot']);
+    Route::post('/reset-password', [PasswordResetController::class, 'reset']);
+});
+Route::get('/email/verify/{id}/{hash}', [EmailVerificationController::class, 'verify'])
+    ->middleware(['throttle:verification', 'signed:relative'])
+    ->name('verification.verify');
+
+Route::middleware(['auth:sanctum', 'active', 'throttle:api'])->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/user', [AuthController::class, 'user']);
-    
-    // Admin Routes
-    Route::prefix('admin')->group(function () {
+    Route::post('/email/verification-notification', [EmailVerificationController::class, 'send'])
+        ->middleware('throttle:verification-notice');
+
+    Route::prefix('admin')->middleware(EnsureSubscriptionAccess::class)->group(function () {
+        Route::get('/subscription', [SubscriptionController::class, 'show']);
+        Route::post('/subscription/payments', [SubscriptionController::class, 'store']);
+        Route::middleware('role:superadmin')->group(function () {
+            Route::get('/subscriptions/payments', [SubscriptionController::class, 'index']);
+            Route::put('/subscriptions/payments/{payment}', [SubscriptionController::class, 'review']);
+        });
+        Route::get('/dashboard', DashboardController::class);
+        Route::get('/tenants', [TenantManagementController::class, 'index']);
+        Route::get('/store', [StoreSettingsController::class, 'show']);
+        Route::put('/store', [StoreSettingsController::class, 'update']);
         Route::apiResource('products', AdminProductController::class);
-        Route::apiResource('posts', PostController::class);
+
+        Route::get('/conversations', [ConversationController::class, 'index']);
+        Route::get('/conversations/{conversation}', [ConversationController::class, 'show']);
+        Route::put('/conversations/{conversation}', [ConversationController::class, 'update']);
+        Route::post('/conversations/{conversation}/messages', [ConversationController::class, 'storeMessage']);
+
+        Route::get('/carts', [AbandonedCartController::class, 'index']);
+        Route::put('/carts/{cart}', [AbandonedCartController::class, 'update']);
+
+        Route::get('/orders', [OrderController::class, 'index']);
+        Route::put('/orders/{order}', [OrderController::class, 'update']);
+
+        Route::middleware('role:admin,superadmin')->group(function () {
+            Route::apiResource('posts', PostController::class);
+            Route::apiResource('users', UserManagementController::class)->except(['show']);
+            Route::post('/users/{user}/approve', [UserManagementController::class, 'approve']);
+            Route::post('/users/{user}/suspend', [UserManagementController::class, 'suspend']);
+        });
+
+        Route::middleware('role:superadmin')->get('/database', DatabaseAccessController::class);
     });
 });
 
-// Rutas Públicas (Catálogo del vendedor)
-Route::get('/tenants/{domain}', [TenantController::class, 'show']);
-Route::get('/tenants/{domain}/products', [ProductController::class, 'index']);
+// Throttles run before the store lookup in EnsureSubscriptionAccess.
+Route::middleware(['throttle:public', EnsureSubscriptionAccess::class])->group(function () {
+    Route::get('/tenants/{domain}', [TenantController::class, 'show']);
+    Route::get('/tenants/{domain}/products', [ProductController::class, 'index']);
+    Route::get('/tenants/{domain}/products/{product}', [ProductController::class, 'show']);
+});
+Route::post('/tenants/{domain}/carts', [StorefrontLeadController::class, 'trackCart'])
+    ->middleware(['throttle:carts', EnsureSubscriptionAccess::class]);
+Route::post('/tenants/{domain}/checkout', [StorefrontLeadController::class, 'checkout'])
+    ->middleware(['throttle:checkout', EnsureSubscriptionAccess::class]);
 
-// Rutas Públicas (Blog)
-Route::get('/posts', [PublicPostController::class, 'index']);
-Route::get('/posts/{slug}', [PublicPostController::class, 'show']);
+Route::middleware('throttle:public')->group(function () {
+    Route::get('/posts', [PublicPostController::class, 'index']);
+    Route::get('/posts/{slug}', [PublicPostController::class, 'show']);
+});
