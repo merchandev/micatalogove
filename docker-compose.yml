@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   # -------------------------
   # BACKEND SERVICES
@@ -12,20 +10,27 @@ services:
     container_name: micatalogo-app
     restart: unless-stopped
     working_dir: /var/www
+    env_file: ${APP_ENV_FILE:-.env.production}
     environment:
-      - APP_KEY=base64:nHL3wMdsO7sNptN1XGGsPzhPfsAMbm8CRbyTwtVRmso=
-      - APP_ENV=production
-      - APP_DEBUG=false
-      - DB_CONNECTION=mysql
-      - DB_HOST=db
-      - DB_PORT=3306
-      - DB_DATABASE=api_micatalogo
-      - DB_USERNAME=user
-      - DB_PASSWORD=password
+      APP_KEY: ${APP_KEY:?Set a new APP_KEY in .env.production}
+      APP_ENV: production
+      APP_DEBUG: "false"
+      DB_CONNECTION: mysql
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_PASSWORD: ${DB_PASSWORD:?Set DB_PASSWORD in .env.production}
+      MAIL_MAILER: smtp
+      MAIL_HOST: ${MAIL_HOST:?Set a real SMTP host in .env.production}
+      MAIL_USERNAME: ${MAIL_USERNAME:?Set SMTP credentials in .env.production}
+      MAIL_PASSWORD: ${MAIL_PASSWORD:?Set SMTP credentials in .env.production}
+      MAIL_FROM_ADDRESS: ${MAIL_FROM_ADDRESS:?Set MAIL_FROM_ADDRESS in .env.production}
+      PHPMYADMIN_URL: ""
+      MAILPIT_URL: ""
     networks:
       - micatalogo-net
     depends_on:
-      - db
+      db:
+        condition: service_healthy
 
   api-web:
     build:
@@ -35,7 +40,7 @@ services:
     container_name: micatalogo-api-web
     restart: unless-stopped
     ports:
-      - "8001:80"
+      - "127.0.0.1:8001:80"
     networks:
       - micatalogo-net
     depends_on:
@@ -46,12 +51,43 @@ services:
     container_name: micatalogo-db
     restart: unless-stopped
     environment:
-      MYSQL_DATABASE: api_micatalogo
-      MYSQL_ROOT_PASSWORD: secret
-      MYSQL_USER: user
-      MYSQL_PASSWORD: password
+      MYSQL_DATABASE: ${DB_DATABASE:?Set DB_DATABASE in .env.production}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?Set MYSQL_ROOT_PASSWORD in .env.production}
+      MYSQL_USER: ${DB_USERNAME:?Set DB_USERNAME in .env.production}
+      MYSQL_PASSWORD: ${DB_PASSWORD:?Set DB_PASSWORD in .env.production}
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
     volumes:
       - micatalogo-db-data:/var/lib/mysql
+    networks:
+      - micatalogo-net
+
+  phpmyadmin:
+    profiles: [tools]
+    image: phpmyadmin:5.2
+    container_name: micatalogo-phpmyadmin
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8081:80"
+    environment:
+      PMA_HOST: db
+      PMA_PORT: 3306
+      UPLOAD_LIMIT: 128M
+    networks:
+      - micatalogo-net
+    depends_on:
+      - db
+
+  mailpit:
+    profiles: [tools]
+    image: axllent/mailpit:latest
+    container_name: micatalogo-mailpit
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8025:8025"
     networks:
       - micatalogo-net
 
@@ -59,6 +95,8 @@ services:
   # FRONTEND SERVICES
   # -------------------------
   front-web:
+    depends_on:
+      - api-web
     build:
       context: ./front-micatalogo
       dockerfile: Dockerfile
@@ -66,7 +104,7 @@ services:
     container_name: micatalogo-front
     restart: unless-stopped
     ports:
-      - "8002:80"
+      - "127.0.0.1:8002:80"
     networks:
       - micatalogo-net
 

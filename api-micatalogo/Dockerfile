@@ -39,4 +39,6 @@ RUN mkdir -p /var/www/storage/framework/cache/data \
     && chmod -R 775 /var/www/bootstrap/cache
 
 EXPOSE 9000
+COPY --chmod=755 docker/entrypoint.sh /usr/local/bin/micatalogo-entrypoint
+ENTRYPOINT ["micatalogo-entrypoint"]
 CMD ["php-fpm"]

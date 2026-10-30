@@ -35,7 +35,6 @@ services:
             MYSQL_DATABASE: '${DB_DATABASE}'
             MYSQL_USER: '${DB_USERNAME}'
             MYSQL_PASSWORD: '${DB_PASSWORD}'
-            MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
         volumes:
             - 'sail-mariadb:/var/lib/mysql'
             - './vendor/laravel/sail/database/mariadb/create-testing-database.sh:/docker-entrypoint-initdb.d/10-create-testing-database.sh'
@@ -64,6 +63,24 @@ services:
                 - ping
             retries: 3
             timeout: 5s
+    phpmyadmin:
+        image: 'phpmyadmin:5.2'
+        ports:
+            - '127.0.0.1:${FORWARD_PHPMYADMIN_PORT:-8081}:80'
+        environment:
+            PMA_HOST: mariadb
+            PMA_PORT: 3306
+            UPLOAD_LIMIT: 128M
+        networks:
+            - sail
+        depends_on:
+            - mariadb
+    mailpit:
+        image: 'axllent/mailpit:latest'
+        ports:
+            - '127.0.0.1:${FORWARD_MAILPIT_PORT:-8025}:8025'
+        networks:
+            - sail
 networks:
     sail:
         driver: bridge
