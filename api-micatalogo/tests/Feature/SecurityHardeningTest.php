@@ -111,7 +111,7 @@ class SecurityHardeningTest extends TestCase
         $this->assertDatabaseCount('personal_access_tokens', 0);
     }
 
-    public function test_self_registered_catalog_is_published_only_after_a_valid_signed_email_confirmation(): void
+    public function test_self_registered_catalog_is_visible_during_grace_and_email_confirmation_still_requires_a_valid_signature(): void
     {
         Notification::fake();
         $this->postJson('/api/register', [
@@ -131,9 +131,9 @@ class SecurityHardeningTest extends TestCase
         parse_str(parse_url($url, PHP_URL_QUERY), $query);
 
         Product::create(['tenant_id' => $owner->tenant->id, 'name' => 'Item', 'price' => 5, 'stock_quantity' => 3, 'status' => 'active']);
-        $this->getJson('/api/tenants/owner-shop')->assertForbidden()->assertJsonPath('code', 'email_unverified');
+        $this->getJson('/api/tenants/owner-shop')->assertOk();
         $this->postJson('/api/tenants/owner-shop/checkout', ['items' => [['id' => 1, 'quantity' => 1]]])
-            ->assertForbidden()->assertJsonPath('code', 'email_unverified');
+            ->assertCreated();
 
         $verify = fn (array $params) => $this->getJson("/api/email/verify/{$query['id']}/{$query['hash']}?".http_build_query($params));
         $verify(['expires' => $query['expires'], 'signature' => str_repeat('0', 64)])->assertForbidden();

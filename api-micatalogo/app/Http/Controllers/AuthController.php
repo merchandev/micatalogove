@@ -74,7 +74,7 @@ class AuthController extends Controller
             return $user->load('tenant');
         });
 
-        // The catalog stays unpublished until the owner confirms the address (see EnsureSubscriptionAccess).
+        // Publish immediately with a 24-hour email confirmation window (see EnsureSubscriptionAccess).
         try {
             $user->sendEmailVerificationNotification();
         } catch (\Throwable $exception) {
@@ -82,7 +82,7 @@ class AuthController extends Controller
         }
 
         return response()->json([
-            'message' => 'Tu cuenta fue creada. Confirma tu correo para publicar tu catálogo.',
+            'message' => 'Tu tienda ya está disponible. Confirma tu correo dentro de las próximas 24 horas desde el panel.',
             'user' => $user,
         ], 201);
     }
@@ -142,7 +142,12 @@ class AuthController extends Controller
 
     public function user(Request $request)
     {
-        return response()->json($request->user()->load('tenant'));
+        $data = $request->user()->loadMissing('tenant')->toArray();
+        if ($support = $request->attributes->get('support_session')) {
+            $data['support_session'] = $support->context();
+        }
+
+        return response()->json($data);
     }
 
     public function domainAvailability(Request $request)

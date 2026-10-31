@@ -1,13 +1,16 @@
 <?php
 
+use App\Http\Controllers\AccountPasswordController;
 use App\Http\Controllers\Admin\AbandonedCartController;
 use App\Http\Controllers\Admin\ConversationController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\DatabaseAccessController;
 use App\Http\Controllers\Admin\OrderController;
+use App\Http\Controllers\Admin\PlatformController;
 use App\Http\Controllers\Admin\ProductController as AdminProductController;
 use App\Http\Controllers\Admin\StoreSettingsController;
 use App\Http\Controllers\Admin\SubscriptionController;
+use App\Http\Controllers\Admin\SupportController;
 use App\Http\Controllers\Admin\TenantManagementController;
 use App\Http\Controllers\Admin\UserManagementController;
 use App\Http\Controllers\Api\ProductController;
@@ -19,6 +22,7 @@ use App\Http\Controllers\EmailVerificationController;
 use App\Http\Controllers\PasswordResetController;
 use App\Http\Controllers\PostController;
 use App\Http\Middleware\EnsureSubscriptionAccess;
+use App\Http\Middleware\ResolveSupportSession;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('throttle:public')->get('/plans', fn () => response()->json([
@@ -37,9 +41,11 @@ Route::get('/email/verify/{id}/{hash}', [EmailVerificationController::class, 've
     ->middleware(['throttle:verification', 'signed:relative'])
     ->name('verification.verify');
 
-Route::middleware(['auth:sanctum', 'active', 'throttle:api'])->group(function () {
+Route::middleware(['auth:sanctum', 'active', 'throttle:api', ResolveSupportSession::class])->group(function () {
+    Route::post('/support/stop', [SupportController::class, 'stop']);
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/user', [AuthController::class, 'user']);
+    Route::put('/account/password', AccountPasswordController::class)->middleware('throttle:password');
     Route::post('/email/verification-notification', [EmailVerificationController::class, 'send'])
         ->middleware('throttle:verification-notice');
 
@@ -47,6 +53,12 @@ Route::middleware(['auth:sanctum', 'active', 'throttle:api'])->group(function ()
         Route::get('/subscription', [SubscriptionController::class, 'show']);
         Route::post('/subscription/payments', [SubscriptionController::class, 'store']);
         Route::middleware('role:superadmin')->group(function () {
+            Route::get('/platform', [PlatformController::class, 'index']);
+            Route::post('/platform/stores/{tenant}/support', [SupportController::class, 'start']);
+            Route::get('/platform/stores/{tenant}', [PlatformController::class, 'show']);
+            Route::patch('/platform/stores/{tenant}', [PlatformController::class, 'update']);
+            Route::post('/platform/stores/{tenant}/verification', [PlatformController::class, 'resendVerification'])->middleware('throttle:verification');
+            Route::post('/platform/stores/{tenant}/activation', [PlatformController::class, 'activate']);
             Route::get('/subscriptions/payments', [SubscriptionController::class, 'index']);
             Route::put('/subscriptions/payments/{payment}', [SubscriptionController::class, 'review']);
         });

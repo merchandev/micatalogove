@@ -15,12 +15,42 @@ use Laravel\Sanctum\HasApiTokens;
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable implements MustVerifyEmail
 {
+    protected $appends = ['email_activation'];
+
+    public function emailVerificationDeadline()
+    {
+        return $this->created_at?->copy()->addHours(config('auth.email_verification_grace_hours', 24));
+    }
+
+    public function canPublishBeforeEmailVerification(): bool
+    {
+        return $this->hasVerifiedEmail() || ($this->emailVerificationDeadline()?->isFuture() ?? false);
+    }
+
+    public function getEmailActivationAttribute(): ?array
+    {
+        if (! $this->isClient()) {
+            return null;
+        }
+
+        return [
+            'verified' => $this->hasVerifiedEmail(),
+            'deadline_at' => $this->emailVerificationDeadline()?->toIso8601String(),
+            'grace_hours' => config('auth.email_verification_grace_hours', 24),
+            'can_publish' => $this->canPublishBeforeEmailVerification(),
+        ];
+    }
+
     public const ROLE_SUPERADMIN = 'superadmin';
+
     public const ROLE_ADMIN = 'admin';
+
     public const ROLE_CLIENT = 'client';
 
     public const STATUS_PENDING = 'pending';
+
     public const STATUS_ACTIVE = 'active';
+
     public const STATUS_SUSPENDED = 'suspended';
 
     /** @use HasFactory<UserFactory> */

@@ -51,7 +51,7 @@ class AppServiceProvider extends ServiceProvider
         VerifyEmail::toMailUsing(fn (object $notifiable, string $url) => (new MailMessage)
             ->subject('Confirma tu correo en MiCatálogo')
             ->greeting('¡Hola!')
-            ->line('Confirma tu correo para publicar tu catálogo. Mientras tanto puedes preparar tu tienda desde el panel.')
+            ->line('Tu tienda ya está disponible. Confirma tu correo durante las primeras 24 horas desde el registro para mantenerla activa. Puedes gestionar la activación desde tu panel.')
             ->action('Confirmar correo', $url)
             ->line('El enlace vence en 24 horas. Si no creaste esta cuenta, ignora este mensaje.'));
 

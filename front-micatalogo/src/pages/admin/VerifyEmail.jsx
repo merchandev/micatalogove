@@ -2,8 +2,10 @@ import { useEffect, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { CheckCircle, XCircle } from 'lucide-react';
 import api from '../../api';
+import { useAuth } from '../../context/AuthContext';
 
 export default function VerifyEmail() {
+  const { refreshUser } = useAuth();
   const [searchParams] = useSearchParams();
   const id = searchParams.get('id');
   const hash = searchParams.get('hash');
@@ -18,14 +20,17 @@ export default function VerifyEmail() {
     api.get(`/email/verify/${encodeURIComponent(id)}/${encodeURIComponent(hash)}`, {
       params: { expires, signature },
     })
-      .then(({ data }) => setState({ status: 'ok', message: data.message }))
+      .then(({ data }) => {
+        setState({ status: 'ok', message: data.message });
+        if (localStorage.getItem('micatalogo_token')) refreshUser().catch(() => {});
+      })
       .catch((err) => setState({
         status: 'error',
         message: err.response?.status === 403
           ? 'El enlace venció o no es válido. Entra a tu panel y solicita uno nuevo.'
           : err.response?.data?.message || 'No pudimos confirmar tu correo. Inténtalo más tarde.',
       }));
-  }, [id, hash, expires, signature]);
+  }, [id, hash, expires, signature, refreshUser]);
 
   const Icon = state.status === 'error' ? XCircle : CheckCircle;
 

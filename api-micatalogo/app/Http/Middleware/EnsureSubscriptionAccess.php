@@ -13,11 +13,12 @@ class EnsureSubscriptionAccess
     {
         if ($domain = $request->route('domain')) {
             $tenant = Tenant::with('user')->where('domain', $domain)->where('status', Tenant::STATUS_ACTIVE)->firstOrFail();
+            abort_if($tenant->user && ! $tenant->user->isActive(), 404);
 
-            // Self-registered stores are published only after the owner confirms the email address.
-            if ($tenant->user?->isClient() && ! $tenant->user->hasVerifiedEmail()) {
+            // Publish immediately; confirmation is managed in the panel within 24 hours of registration.
+            if ($tenant->user?->isClient() && ! $tenant->user->canPublishBeforeEmailVerification()) {
                 return response()->json([
-                    'message' => 'El catálogo se publicará cuando el propietario confirme su correo.',
+                    'message' => 'Este catálogo está temporalmente pausado.',
                     'code' => 'email_unverified',
                 ], 403);
             }

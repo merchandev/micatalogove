@@ -83,7 +83,7 @@ export default function ProductDetail() {
   if (error || !tenant || !product) {
     return (
       <div className="min-h-screen bg-[#f7f7f3] flex flex-col items-center justify-center text-center px-4">
-        <h1 className="text-4xl font-black text-gray-900 mb-4">{paused === 'email_unverified' ? 'Catálogo pendiente de activación' : paused ? 'Catálogo temporalmente pausado' : 'Producto no encontrado'}</h1>
+        <h1 className="text-4xl font-black text-gray-900 mb-4">{paused ? 'Catálogo temporalmente pausado' : 'Producto no encontrado'}</h1>
         <p className="text-gray-500 mb-8 max-w-md">{paused ? 'La tienda no está disponible en este momento.' : 'El producto no existe, no esta activo o la tienda no esta disponible.'}</p>
         <Link to={`/${domain}`} className="bg-gray-900 text-white px-6 py-3 rounded-lg font-bold hover:bg-black transition-colors">
           Ver tienda

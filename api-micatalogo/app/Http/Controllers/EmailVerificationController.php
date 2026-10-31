@@ -21,7 +21,7 @@ class EmailVerificationController extends Controller
             event(new Verified($user));
         }
 
-        return response()->json(['message' => 'Correo confirmado. Tu catálogo ya puede publicarse.']);
+        return response()->json(['message' => 'Correo confirmado. La activación de tu cuenta está completa.']);
     }
 
     public function send(Request $request)

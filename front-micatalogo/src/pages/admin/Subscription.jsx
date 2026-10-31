@@ -66,11 +66,11 @@ export default function Subscription() {
           {!subscription.has_access && <p className="mt-6 text-amber-200">Tu catálogo público está pausado. Puedes consultar tus datos; renueva para volver a publicar y realizar cambios.</p>}
           <ul className="mt-6 grid sm:grid-cols-2 gap-3 text-gray-300 text-sm">{subscription.plan.features.map(feature => <li key={feature}>✓ {feature}</li>)}</ul>
         </section>
-        <form onSubmit={report} className="bg-cardDark border border-borderDark rounded-2xl p-7 space-y-4">
+        {!user.support_session && <form onSubmit={report} className="bg-cardDark border border-borderDark rounded-2xl p-7 space-y-4">
           <h2 className="text-xl font-bold flex gap-2 items-center"><CreditCard className="w-5 h-5 text-accent" />Reportar mensualidad</h2>
           <p className="text-gray-400 text-sm">Primero acuerda el método y los datos de pago con soporte. Este formulario solo reporta el pago; no cobra ni activa automáticamente la suscripción. Si pagas antes de vencer, conservas el tiempo que te queda.</p>
           {pending ? <p className="text-amber-200">Ya tienes un pago en revisión.</p> : <><label className="block text-sm">Referencia del pago<input required maxLength={150} value={reference} onChange={event => setReference(event.target.value)} className="mt-2 block w-full bg-gray-900 border border-borderDark rounded-lg p-3" /></label><label className="block text-sm">Observaciones<textarea maxLength={1000} value={notes} onChange={event => setNotes(event.target.value)} className="mt-2 block w-full bg-gray-900 border border-borderDark rounded-lg p-3" /></label><button disabled={busy} className="bg-accent hover:bg-accentHover disabled:opacity-50 px-5 py-3 rounded-lg font-bold">{busy ? 'Enviando…' : 'Enviar a revisión'}</button></>}
-        </form>
+        </form>}
       </>}
       <section className="bg-cardDark border border-borderDark rounded-2xl overflow-x-auto">
         <h2 className="text-xl font-bold p-6">{reviewMode ? 'Reportes de pago' : 'Historial de pagos'}</h2>

@@ -2,6 +2,8 @@
 
 Fecha: 30/10/2026.
 
+Actualización de activación: la tienda se muestra desde el registro y el propietario tiene 24 horas para confirmar su correo mediante el aviso del panel. Después del plazo se pausa si no ha confirmado, conservando sus datos y el acceso al panel. Esta regla es independiente de los siete días de prueba y no los reinicia. Ver `ACTIVACION-24-HORAS.md`.
+
 ## Decisiones confirmadas
 
 - Un único plan inicial de **USD 5 al mes**.

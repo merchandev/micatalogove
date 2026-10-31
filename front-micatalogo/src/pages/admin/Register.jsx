@@ -127,7 +127,7 @@ export default function Register() {
             </div>
             <h2 className="text-3xl font-black text-white mb-4">¡Tienda creada exitosamente!</h2>
             <p className="text-gray-400 mb-4">
-              Tu tienda <strong className="text-white">{formData.store_name}</strong> ya está lista. Te enviamos un correo a <strong className="text-white">{formData.email}</strong>: confírmalo para publicar tu catálogo en:
+              Tu tienda <strong className="text-white">{formData.store_name}</strong> ya está visible. Tienes 24 horas para confirmar el correo <strong className="text-white">{formData.email}</strong>. Gestiona la activación dentro de tu panel. Este es tu catálogo:
             </p>
             <a
               href={`/${formData.domain}`}

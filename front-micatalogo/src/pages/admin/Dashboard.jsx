@@ -2,11 +2,12 @@ import { useEffect, useMemo, useState } from 'react';
 import { AlertTriangle, MessageSquare, Package, ShoppingCart, Store, Users } from 'lucide-react';
 import api from '../../api';
 import { useAuth } from '../../context/AuthContext';
-import { isPlatformAdmin } from '../../lib/permissions';
+import { isPlatformAdmin, isSuperAdmin } from '../../lib/permissions';
+import PlatformOverview from './PlatformOverview';
 
 const money = new Intl.NumberFormat('es-VE', { style: 'currency', currency: 'USD' });
 
-export default function Dashboard() {
+function StoreDashboard() {
     const { user } = useAuth();
     const [data, setData] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -150,4 +151,9 @@ export default function Dashboard() {
             </div>
         </div>
     );
+}
+
+export default function Dashboard() {
+    const { user } = useAuth();
+    return isSuperAdmin(user) ? <PlatformOverview /> : <StoreDashboard />;
 }

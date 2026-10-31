@@ -11,10 +11,12 @@ import {
     Store,
     Users,
     CreditCard,
+    KeyRound,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import SubscriptionBanner from './SubscriptionBanner';
 import EmailVerificationBanner from './EmailVerificationBanner';
+import SupportBanner from './SupportBanner';
 import { canAccessDatabase, canManageBlog, canManageUsers, isClient, isSuperAdmin, ROLE_LABELS } from '../lib/permissions';
 
 export default function AdminLayout() {
@@ -26,6 +28,7 @@ export default function AdminLayout() {
 
     const links = [
         { to: '/admin/dashboard', label: 'Panel', icon: LayoutDashboard, show: true },
+        { to: '/admin/stores', label: 'Tiendas y clientes', icon: Store, show: isSuperAdmin(user) },
         { to: '/admin/store', label: 'Tienda', icon: Store, show: isClient(user) },
         { to: '/admin/products', label: 'Inventario', icon: Package, show: true },
         { to: '/admin/conversations', label: 'Conversaciones', icon: MessageSquare, show: true },
@@ -35,6 +38,7 @@ export default function AdminLayout() {
         { to: '/admin/users', label: 'Usuarios', icon: Users, show: canManageUsers(user) },
         { to: '/admin/blog', label: 'Blog', icon: FileText, show: canManageBlog(user) },
         { to: '/admin/database', label: 'Base de datos', icon: Database, show: canAccessDatabase(user) },
+        { to: '/admin/security', label: 'Cambiar contraseña', icon: KeyRound, show: !user?.support_session },
     ].filter((item) => item.show);
 
     const handleLogout = async () => {
@@ -92,6 +96,7 @@ export default function AdminLayout() {
             </aside>
 
             <main className="flex-1 overflow-y-auto p-8 text-white">
+                <SupportBanner />
                 {isClient(user) && !user.email_verified_at && <EmailVerificationBanner />}
                 {isClient(user) && <SubscriptionBanner />}
                 <Outlet />

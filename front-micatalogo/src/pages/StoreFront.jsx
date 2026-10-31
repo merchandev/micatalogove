@@ -172,9 +172,9 @@ export default function StoreFront() {
   if (error || !tenant) {
     return (
       <div className="min-h-screen bg-[#f7f7f3] flex flex-col items-center justify-center text-center px-4">
-        <h1 className="text-4xl font-black text-gray-900 mb-4">{paused === 'email_unverified' ? 'Catálogo pendiente de activación' : paused ? 'Catálogo temporalmente pausado' : 'Tienda no encontrada'}</h1>
+        <h1 className="text-4xl font-black text-gray-900 mb-4">{paused ? 'Catálogo temporalmente pausado' : 'Tienda no encontrada'}</h1>
         <p className="text-gray-500 mb-8 max-w-md">{paused === 'email_unverified'
-            ? 'Este catálogo se publicará cuando el propietario confirme su correo electrónico.'
+            ? 'Esta tienda no está disponible en este momento. Vuelve a intentarlo más tarde.'
             : paused ? 'Esta tienda no está disponible en este momento. Si eres el propietario, entra a tu panel para gestionar la suscripción.' : 'La URL no existe o la tienda no esta activa.'}</p>
         {paused && <Link to={paused === 'email_unverified' ? '/admin/dashboard' : '/admin/subscription'} className="text-emerald-700 font-bold mb-6">Entrar a mi panel</Link>}
         <Link to="/" className="bg-gray-900 text-white px-6 py-3 rounded-lg font-bold hover:bg-black transition-colors">

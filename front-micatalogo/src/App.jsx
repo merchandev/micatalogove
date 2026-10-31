@@ -15,6 +15,8 @@ import Dashboard from './pages/admin/Dashboard';
 import ProductsAdmin from './pages/admin/ProductsAdmin';
 import StoreSettings from './pages/admin/StoreSettings';
 import Subscription from './pages/admin/Subscription';
+import PlatformOverview from './pages/admin/PlatformOverview';
+import AccountSecurity from './pages/admin/AccountSecurity';
 import ConversationsAdmin from './pages/admin/ConversationsAdmin';
 import CartsAdmin from './pages/admin/CartsAdmin';
 import SalesAdmin from './pages/admin/SalesAdmin';
@@ -91,6 +93,8 @@ function App() {
               <Route index element={<Navigate to="/admin/dashboard" replace />} />
               <Route path="dashboard" element={<Dashboard />} />
               <Route path="store" element={<StoreSettings />} />
+              <Route path="stores" element={<ProtectedRoute roles={[ROLES.SUPERADMIN]}><PlatformOverview /></ProtectedRoute>} />
+              <Route path="security" element={<AccountSecurity />} />
               <Route path="subscription" element={<ProtectedRoute roles={[ROLES.CLIENT, ROLES.SUPERADMIN]}><Subscription /></ProtectedRoute>} />
               <Route path="products" element={<ProductsAdmin />} />
               <Route path="conversations" element={<ConversationsAdmin />} />

@@ -21,7 +21,7 @@ class DashboardController extends Controller
 
     public function __invoke(Request $request)
     {
-        $user = $request->user()->load('tenant');
+        $user = $request->user()->loadMissing('tenant');
         $tenantIds = $this->tenantIdsFor($user);
         $isPlatform = $user->isPlatformAdmin();
 

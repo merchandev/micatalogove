@@ -12,6 +12,7 @@ export default function Login() {
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
     const sessionExpired = searchParams.get('session') === 'expired';
+    const passwordUpdated = searchParams.get('password') === 'updated';
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -55,6 +56,7 @@ tu espacio.</h1>
                         <p className="text-gray-400 text-sm">Ingresa tus credenciales para acceder a tu panel.</p>
                     </div>
 
+                    {passwordUpdated && !error && <p role="status" className="text-sm text-accent">Contraseña actualizada. Entra con tu nueva contraseña.</p>}
                     {sessionExpired && !error && (
                         <div role="status" className="bg-amber-500/10 border border-amber-500/40 text-amber-300 p-3 rounded-lg text-sm">
                             Tu sesión expiró o fue cerrada. Inicia sesión nuevamente.
