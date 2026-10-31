@@ -4,7 +4,7 @@ import PublicFooter from '../../components/PublicFooter';
 
 export default function TerminosYCondiciones() {
   return (
-    <div className="min-h-screen bg-[#060A08] text-white font-sans selection:bg-accent selection:text-white flex flex-col">
+    <div className="marketing-site legacy-page min-h-screen bg-[#060A08] text-white font-sans selection:bg-accent selection:text-white flex flex-col">
       <PublicNavbar />
       
       <div className="flex-grow pt-32 pb-20 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
@@ -39,7 +39,7 @@ export default function TerminosYCondiciones() {
             <section>
               <h2 className="text-xl font-bold text-white mb-4">4. Suscripciones y Pagos</h2>
               <p>
-                MiCatálogo ofrece planes gratuitos y de pago (Suscripciones). Las suscripciones se facturan por adelantado en un ciclo recurrente (mensual o anual). La tasa de cambio aplicable para pagos en Bolívares estará basada en la tasa oficial del Banco Central de Venezuela (BCV) del día del pago.
+                MiCatálogo ofrece una prueba gratuita de 7 días. Para continuar al finalizar la prueba, la suscripción cuesta USD 5 al mes. La renovación de esta versión requiere verificación del pago por un administrador y no realiza cargos automáticos. Al vencer, el catálogo público y las modificaciones de la tienda se pausan; el propietario conserva acceso de consulta a sus datos y a la gestión de su suscripción.
               </p>
             </section>
 

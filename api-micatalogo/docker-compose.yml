@@ -15,6 +15,7 @@ services:
       - micatalogo-net
     depends_on:
       - db
+      - mailpit
 
   web:
     image: nginx:alpine
@@ -35,12 +36,36 @@ services:
     container_name: micatalogo-db
     restart: unless-stopped
     environment:
-      MYSQL_DATABASE: api_micatalogo
-      MYSQL_ROOT_PASSWORD: secret
-      MYSQL_USER: user
-      MYSQL_PASSWORD: password
+      MYSQL_DATABASE: ${DB_DATABASE:?Set DB_DATABASE}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?Set MYSQL_ROOT_PASSWORD}
+      MYSQL_USER: ${DB_USERNAME:?Set DB_USERNAME}
+      MYSQL_PASSWORD: ${DB_PASSWORD:?Set DB_PASSWORD}
     volumes:
       - micatalogo-db-data:/var/lib/mysql
+    networks:
+      - micatalogo-net
+
+  phpmyadmin:
+    image: phpmyadmin:5.2
+    container_name: micatalogo-phpmyadmin
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8081:80"
+    environment:
+      PMA_HOST: db
+      PMA_PORT: 3306
+      UPLOAD_LIMIT: 128M
+    networks:
+      - micatalogo-net
+    depends_on:
+      - db
+
+  mailpit:
+    image: axllent/mailpit:latest
+    container_name: micatalogo-mailpit
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8025:8025"
     networks:
       - micatalogo-net
 

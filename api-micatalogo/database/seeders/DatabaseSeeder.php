@@ -3,54 +3,44 @@
 namespace Database\Seeders;
 
 use App\Models\User;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
+use RuntimeException;
 
 class DatabaseSeeder extends Seeder
 {
-    use WithoutModelEvents;
-
-    /**
-     * Seed the application's database.
-     */
     public function run(): void
     {
-        $user = \App\Models\User::create([
-            'name' => 'Arturo Merchán',
-            'email' => 'admin@micatalogo.com',
-            'password' => bcrypt('password123'),
-        ]);
+        if (! app()->isProduction()) {
+            $this->call(DemoSeeder::class);
 
-        $tenant = \App\Models\Tenant::create([
-            'user_id' => $user->id,
-            'name' => 'Arturo Store',
-            'domain' => 'arturomerchan18',
-            'whatsapp_number' => '584121234567',
-            'store_description' => 'La mejor tienda online.',
-        ]);
+            return;
+        }
 
-        $category = \App\Models\Category::create([
-            'tenant_id' => $tenant->id,
-            'name' => 'Electrónica',
-            'slug' => 'electronica'
-        ]);
+        $email = config('seeding.superadmin_email');
+        $password = config('seeding.superadmin_password');
+        if (! is_string($email) || ! filter_var($email, FILTER_VALIDATE_EMAIL)
+            || ! is_string($password) || strlen($password) < 16) {
+            throw new RuntimeException('Set SEED_SUPERADMIN_EMAIL and a SEED_SUPERADMIN_PASSWORD of at least 16 characters.');
+        }
 
-        \App\Models\Product::create([
-            'tenant_id' => $tenant->id,
-            'category_id' => $category->id,
-            'name' => 'Laptop Gamer',
-            'description' => 'Potente laptop para gaming.',
-            'price' => 1200.00,
-            'status' => 'active'
-        ]);
-        
-        \App\Models\Product::create([
-            'tenant_id' => $tenant->id,
-            'category_id' => $category->id,
-            'name' => 'Mouse Inalámbrico',
-            'description' => 'Mouse ergonómico.',
-            'price' => 25.50,
-            'status' => 'active'
+        // Never reset an existing account or promote an existing lower-privilege user.
+        $user = User::where('email', $email)->first();
+        if ($user) {
+            if ($user->role !== User::ROLE_SUPERADMIN) {
+                throw new RuntimeException('The bootstrap email belongs to a non-superadmin account.');
+            }
+
+            return;
+        }
+
+        User::create([
+            'email' => $email,
+            'name' => 'Superadmin MiCatalogo',
+            'password' => Hash::make($password),
+            'role' => User::ROLE_SUPERADMIN,
+            'status' => User::STATUS_ACTIVE,
+            'approved_at' => now(),
         ]);
     }
 }

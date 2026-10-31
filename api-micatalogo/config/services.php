@@ -35,4 +35,8 @@ return [
         ],
     ],
 
+    'phpmyadmin' => [
+        'url' => env('PHPMYADMIN_URL', 'http://localhost:8081'),
+    ],
+
 ];

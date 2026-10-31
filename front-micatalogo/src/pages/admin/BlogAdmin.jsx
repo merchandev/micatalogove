@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import axios from 'axios';
 import { Edit, Trash2, Plus } from 'lucide-react';
+import api from '../../api';
 
 export default function BlogAdmin() {
   const [posts, setPosts] = useState([]);
@@ -13,10 +13,7 @@ export default function BlogAdmin() {
 
   const fetchPosts = async () => {
     try {
-      const token = localStorage.getItem('auth_token');
-      const response = await axios.get('http://localhost:8000/api/admin/posts', {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const response = await api.get('/admin/posts');
       setPosts(response.data);
     } catch (error) {
       console.error('Error fetching posts:', error);
@@ -28,10 +25,7 @@ export default function BlogAdmin() {
   const deletePost = async (id) => {
     if (!window.confirm('¿Seguro que deseas eliminar esta publicación?')) return;
     try {
-      const token = localStorage.getItem('auth_token');
-      await axios.delete(`http://localhost:8000/api/admin/posts/${id}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      await api.delete(`/admin/posts/${id}`);
       setPosts(posts.filter(p => p.id !== id));
     } catch (error) {
       console.error('Error deleting post:', error);

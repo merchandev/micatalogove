@@ -1,9 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import axios from 'axios';
 import PublicNavbar from '../components/PublicNavbar';
 import PublicFooter from '../components/PublicFooter';
 import { Calendar, User, ArrowLeft } from 'lucide-react';
+import DOMPurify from 'dompurify';
+import api from '../api';
+
+// The API already stores allow-listed HTML; sanitize again before injecting it into the page.
+const sanitizePostHtml = (html) => DOMPurify.sanitize(html || '', {
+  USE_PROFILES: { html: true },
+  FORBID_TAGS: ['style', 'form', 'input', 'button', 'textarea', 'select'],
+  FORBID_ATTR: ['style', 'class'],
+});
 
 export default function BlogPost() {
   const { slug } = useParams();
@@ -12,23 +20,15 @@ export default function BlogPost() {
   const [error, setError] = useState('');
 
   useEffect(() => {
-    fetchPost();
+    api.get(`/posts/${slug}`)
+      .then(({ data }) => setPost(data))
+      .catch(() => setError('Artículo no encontrado.'))
+      .finally(() => setLoading(false));
   }, [slug]);
-
-  const fetchPost = async () => {
-    try {
-      const response = await axios.get(`http://localhost:8000/api/posts/${slug}`);
-      setPost(response.data);
-    } catch (err) {
-      setError('Artículo no encontrado.');
-    } finally {
-      setLoading(false);
-    }
-  };
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#060A08] flex items-center justify-center">
+      <div className="marketing-site legacy-page min-h-screen bg-[#060A08] flex items-center justify-center">
         <div className="text-white">Cargando artículo...</div>
       </div>
     );
@@ -36,7 +36,7 @@ export default function BlogPost() {
 
   if (error || !post) {
     return (
-      <div className="min-h-screen bg-[#060A08] flex flex-col items-center justify-center">
+      <div className="marketing-site legacy-page min-h-screen bg-[#060A08] flex flex-col items-center justify-center">
         <h1 className="text-3xl text-white mb-4">404</h1>
         <p className="text-gray-400 mb-6">{error}</p>
         <Link to="/blog" className="text-accent hover:underline">Volver al Blog</Link>
@@ -45,7 +45,7 @@ export default function BlogPost() {
   }
 
   return (
-    <div className="min-h-screen bg-[#060A08] text-white font-sans selection:bg-accent selection:text-white flex flex-col">
+    <div className="marketing-site legacy-page min-h-screen bg-[#060A08] text-white font-sans selection:bg-accent selection:text-white flex flex-col">
       <PublicNavbar />
       
       <div className="flex-grow pt-32 pb-24 w-full">
@@ -93,7 +93,7 @@ export default function BlogPost() {
               prose-img:rounded-2xl prose-img:border prose-img:border-white/10
               prose-blockquote:border-l-accent prose-blockquote:bg-white/[0.02] prose-blockquote:py-2 prose-blockquote:px-4 prose-blockquote:rounded-r-lg
               prose-strong:text-white"
-            dangerouslySetInnerHTML={{ __html: post.content }}
+            dangerouslySetInnerHTML={{ __html: sanitizePostHtml(post.content) }}
           />
         </main>
       </div>

@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import axios from 'axios';
 import PublicNavbar from '../components/PublicNavbar';
 import PublicFooter from '../components/PublicFooter';
 import { Calendar, User, ArrowRight } from 'lucide-react';
+import api from '../api';
 
 export default function BlogIndex() {
   const [posts, setPosts] = useState([]);
@@ -15,7 +15,7 @@ export default function BlogIndex() {
 
   const fetchPosts = async () => {
     try {
-      const response = await axios.get('http://localhost:8000/api/posts');
+      const response = await api.get('/posts');
       setPosts(response.data);
     } catch (error) {
       console.error('Error fetching public posts:', error);
@@ -25,7 +25,7 @@ export default function BlogIndex() {
   };
 
   return (
-    <div className="min-h-screen bg-[#060A08] text-white font-sans selection:bg-accent selection:text-white flex flex-col">
+    <div className="marketing-site legacy-page min-h-screen bg-[#060A08] text-white font-sans selection:bg-accent selection:text-white flex flex-col">
       <PublicNavbar />
       
       <div className="flex-grow pt-32 pb-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">

@@ -1,27 +1,22 @@
-import React, { useState } from 'react';
-import { ShoppingCart, Search, Zap, Cpu, Battery, Wifi, X, ChevronRight } from 'lucide-react';
+import { ShoppingCart, Search, ChevronRight, X, Zap, Cpu } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 
-export default function TechDemo() {
-  const [isCartOpen, setIsCartOpen] = useState(false);
-  const [cart, setCart] = useState([]);
-
-  const products = [
-    { id: 1, name: 'Auriculares Quantum Pro', price: 299.99, category: 'Audio', image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&q=80&w=800', specs: ['Hi-Res Audio', 'Noise Cancelling', '40h Batería'] },
-    { id: 2, name: 'Reloj Inteligente X2', price: 199.50, category: 'Wearables', image: 'https://images.unsplash.com/photo-1546868871-7041f2a55e12?auto=format&fit=crop&q=80&w=800', specs: ['OLED 1.4"', 'GPS', 'Sumergible'] },
-    { id: 3, name: 'Cámara DSLR Alpha', price: 899.00, category: 'Fotografía', image: 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&q=80&w=800', specs: ['24.2 MP', '4K Video', 'Wi-Fi'] },
-    { id: 4, name: 'Teclado Mecánico RGB', price: 129.99, category: 'Periféricos', image: 'https://images.unsplash.com/photo-1595225476474-87563907a212?auto=format&fit=crop&q=80&w=800', specs: ['Switches Cherry', 'RGB', 'Inalámbrico'] },
-    { id: 5, name: 'Monitor UltraWide 34"', price: 450.00, category: 'Monitores', image: 'https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?auto=format&fit=crop&q=80&w=800', specs: ['144Hz', '1ms', 'HDR10'] },
-    { id: 6, name: 'Ratón Gaming Pro', price: 79.99, category: 'Periféricos', image: 'https://images.unsplash.com/photo-1527814050087-379381547969?auto=format&fit=crop&q=80&w=800', specs: ['16000 DPI', 'Ligero 65g', 'RGB'] },
-  ];
-
-  const addToCart = (product) => {
-    setCart([...cart, product]);
-    setIsCartOpen(true);
-  };
-
-  const total = cart.reduce((sum, item) => sum + item.price, 0);
+export default function TechDemo({ 
+  tenant = null, 
+  domain = '',
+  products = [], 
+  cart = [], 
+  isCartOpen = false, 
+  setIsCartOpen = () => {}, 
+  addToCart = () => {}, 
+  submitCart = () => {}, 
+  total = 0, 
+  contact = { customer_name: '', customer_phone: '' }, 
+  setContact = () => {} 
+}) {
+  const categories = ['Todos los productos'];
+  const productHref = (product) => domain ? `/${domain}/productos/${product.slug || product.id}` : null;
 
   return (
     <div className="min-h-screen bg-[#0A0A0A] text-gray-300 font-sans selection:bg-blue-500/30">
@@ -35,14 +30,14 @@ export default function TechDemo() {
       <nav className="relative z-50 border-b border-white/5 bg-[#0A0A0A]/80 backdrop-blur-md sticky top-0">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-20">
-            <Link to="/demos" className="text-gray-500 hover:text-white transition-colors flex items-center gap-2">
+            <Link to="/" className="text-gray-500 hover:text-white transition-colors flex items-center gap-2">
               <ChevronRight className="w-5 h-5 rotate-180" />
               <span>Volver</span>
             </Link>
             
             <div className="flex items-center gap-2">
               <Zap className="w-6 h-6 text-blue-500" />
-              <span className="text-xl font-bold text-white tracking-wider">TECH<span className="text-blue-500">NOVA</span></span>
+              <span className="text-xl font-bold text-white tracking-wider uppercase">{tenant?.name || 'TECHNOVA'}</span>
             </div>
 
             <div className="flex items-center gap-6">
@@ -70,14 +65,14 @@ export default function TechDemo() {
           >
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs mb-6">
               <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span>
-              Nuevos Lanzamientos 2026
+              Nuevos Lanzamientos
             </div>
-            <h1 className="text-5xl md:text-7xl font-bold text-white mb-6 leading-tight">
-              El Futuro <br />
+            <h1 className="text-5xl md:text-7xl font-bold text-white mb-6 leading-tight uppercase">
+              {tenant?.name || 'El Futuro'}<br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">en tus manos.</span>
             </h1>
             <p className="text-lg text-gray-400 mb-8 max-w-lg">
-              Tecnología de vanguardia diseñada para aquellos que no se conforman. Potencia, rendimiento y diseño sin compromisos.
+              {tenant?.store_description || 'Tecnología de vanguardia diseñada para aquellos que no se conforman. Potencia, rendimiento y diseño sin compromisos.'}
             </p>
             <motion.button 
               whileHover={{ scale: 1.05 }}
@@ -107,7 +102,7 @@ export default function TechDemo() {
             <p className="text-gray-500">Selección premium para creadores y gamers.</p>
           </div>
           <div className="hidden md:flex gap-4">
-            {['Audio', 'Wearables', 'Fotografía', 'Monitores'].map(cat => (
+            {categories.map(cat => (
               <span key={cat} className="text-sm px-4 py-1.5 rounded-full border border-white/10 hover:border-blue-500/50 hover:bg-blue-500/10 transition-colors cursor-pointer text-gray-400 hover:text-white">
                 {cat}
               </span>
@@ -115,55 +110,62 @@ export default function TechDemo() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {products.map((product, i) => (
-            <motion.div 
-              key={product.id}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-50px" }}
-              transition={{ duration: 0.5, delay: i * 0.1 }}
-              whileHover={{ y: -5 }}
-              className="group bg-[#121212] border border-white/5 hover:border-blue-500/30 rounded-xl overflow-hidden transition-colors"
-            >
-              <div className="relative h-64 overflow-hidden bg-black/50 p-6 flex items-center justify-center">
-                <img src={product.image} alt={product.name} className="w-full h-full object-cover rounded-lg group-hover:scale-105 transition-transform duration-500 opacity-80 group-hover:opacity-100" />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#121212] via-transparent to-transparent"></div>
-              </div>
-              <div className="p-6 relative">
-                <div className="absolute top-0 right-6 -translate-y-1/2">
-                  <motion.button 
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.9 }}
-                    onClick={() => addToCart(product)}
-                    className="w-12 h-12 bg-blue-600 text-white rounded-full flex items-center justify-center shadow-[0_0_15px_rgba(37,99,235,0.4)] hover:bg-blue-500"
-                  >
-                    <ShoppingCart className="w-5 h-5" />
-                  </motion.button>
-                </div>
-                <p className="text-blue-400 text-xs font-mono uppercase tracking-wider mb-2">{product.category}</p>
-                <h3 className="text-xl font-bold text-white mb-4">{product.name}</h3>
-                
-                {/* Specs */}
-                <div className="flex gap-2 mb-6">
-                  {product.specs.map((spec, index) => (
-                    <span key={index} className="text-[10px] font-mono text-gray-400 bg-white/5 px-2 py-1 rounded">
-                      {spec}
-                    </span>
-                  ))}
-                </div>
-                
-                <p className="text-2xl text-white font-light">${product.price.toFixed(2)}</p>
-              </div>
-            </motion.div>
-          ))}
-        </div>
+        {products.length === 0 ? (
+           <div className="text-center text-gray-500 font-mono py-16 border border-white/5 rounded-xl">
+             <Cpu className="w-12 h-12 mx-auto mb-4 opacity-50" />
+             No hay dispositivos disponibles.
+           </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {products.map((product, i) => {
+              const outOfStock = Number(product.stock_quantity) <= 0;
+              return (
+                <motion.div 
+                  key={product.id}
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: "-50px" }}
+                  transition={{ duration: 0.5, delay: (i % 3) * 0.1 }}
+                  whileHover={{ y: -5 }}
+                  className={`group bg-[#121212] border border-white/5 hover:border-blue-500/30 rounded-xl overflow-hidden transition-colors ${outOfStock ? 'opacity-50 grayscale' : ''}`}
+                >
+                  <div className="relative h-64 overflow-hidden bg-black/50 p-6 flex items-center justify-center">
+                    <img src={product.image_url || 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&q=80&w=800'} alt={product.name} className="w-full h-full object-cover rounded-lg group-hover:scale-105 transition-transform duration-500 opacity-80 group-hover:opacity-100" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#121212] via-transparent to-transparent"></div>
+                  </div>
+                  <div className="p-6 relative">
+                    <div className="absolute top-0 right-6 -translate-y-1/2">
+                      <motion.button 
+                        whileHover={{ scale: 1.1 }}
+                        whileTap={{ scale: 0.9 }}
+                        disabled={outOfStock}
+                        onClick={() => addToCart(product)}
+                        className="w-12 h-12 bg-blue-600 text-white rounded-full flex items-center justify-center shadow-[0_0_15px_rgba(37,99,235,0.4)] hover:bg-blue-500 disabled:bg-gray-700 disabled:shadow-none"
+                      >
+                        <ShoppingCart className="w-5 h-5" />
+                      </motion.button>
+                    </div>
+                    {productHref(product) ? (
+                      <Link to={productHref(product)} className="block text-xl font-bold text-white hover:text-blue-400 transition-colors mb-4 mt-2">
+                        {product.name}
+                      </Link>
+                    ) : (
+                      <h3 className="text-xl font-bold text-white mb-4 mt-2">{product.name}</h3>
+                    )}
+                    
+                    <p className="text-2xl text-white font-light">${Number(product.price).toFixed(2)}</p>
+                  </div>
+                </motion.div>
+              );
+            })}
+          </div>
+        )}
       </div>
 
       {/* Footer */}
       <footer className="relative z-10 border-t border-white/5 bg-[#0A0A0A] py-12 text-center text-gray-500">
         <Zap className="w-6 h-6 mx-auto mb-4 text-white/20" />
-        <p className="text-sm font-mono">TECHNOVA © 2026. All Systems Operational.</p>
+        <p className="text-sm font-mono">{tenant?.name || 'TECHNOVA'} © 2026. All Systems Operational.</p>
       </footer>
 
       {/* Cart Drawer */}
@@ -198,23 +200,42 @@ export default function TechDemo() {
                     Sin dispositivos en el carrito.
                   </div>
                 ) : (
-                  cart.map((item, index) => (
-                    <motion.div 
-                      initial={{ opacity: 0, x: 20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: index * 0.05 }}
-                      key={index} 
-                      className="flex items-center gap-4 bg-[#151515] p-3 rounded-lg border border-white/5"
-                    >
-                      <div className="w-16 h-16 bg-black rounded-md overflow-hidden p-1">
-                        <img src={item.image} className="w-full h-full object-cover rounded opacity-80" alt="" />
-                      </div>
-                      <div className="flex-1">
-                        <h4 className="font-medium text-white text-sm mb-1">{item.name}</h4>
-                        <p className="text-blue-400 font-mono text-xs">${item.price.toFixed(2)}</p>
-                      </div>
-                    </motion.div>
-                  ))
+                  <>
+                    {cart.map((item, index) => (
+                      <motion.div 
+                        initial={{ opacity: 0, x: 20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: index * 0.05 }}
+                        key={`${item.id}-${index}`} 
+                        className="flex items-center gap-4 bg-[#151515] p-3 rounded-lg border border-white/5"
+                      >
+                        <div className="w-16 h-16 bg-black rounded-md overflow-hidden p-1">
+                          <img src={item.image_url || 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&q=80&w=800'} className="w-full h-full object-cover rounded opacity-80" alt={item.name} />
+                        </div>
+                        <div className="flex-1">
+                          <h4 className="font-medium text-white text-sm mb-1">{item.name}</h4>
+                          <p className="text-blue-400 font-mono text-xs">{item.quantity} x ${Number(item.price).toFixed(2)}</p>
+                        </div>
+                      </motion.div>
+                    ))}
+
+                    <div className="mt-8 space-y-4 border-t border-white/10 pt-4">
+                      <input 
+                        type="text"
+                        placeholder="ID USUARIO (NOMBRE)"
+                        value={contact.customer_name}
+                        onChange={(e) => setContact({...contact, customer_name: e.target.value})}
+                        className="w-full bg-[#151515] border border-white/10 text-white font-mono text-sm p-3 focus:outline-none focus:border-blue-500 rounded"
+                      />
+                      <input 
+                        type="tel"
+                        placeholder="ENLACE COMUNICACIÓN (TEL)"
+                        value={contact.customer_phone}
+                        onChange={(e) => setContact({...contact, customer_phone: e.target.value})}
+                        className="w-full bg-[#151515] border border-white/10 text-white font-mono text-sm p-3 focus:outline-none focus:border-blue-500 rounded"
+                      />
+                    </div>
+                  </>
                 )}
               </div>
               
@@ -222,14 +243,15 @@ export default function TechDemo() {
                 <div className="p-6 bg-[#151515] border-t border-white/10">
                   <div className="flex justify-between items-center mb-6 font-mono">
                     <span className="text-gray-400 text-sm">TOTAL</span>
-                    <span className="text-2xl text-white">${total.toFixed(2)}</span>
+                    <span className="text-2xl text-white">${Number(total).toFixed(2)}</span>
                   </div>
                   <motion.button 
+                    onClick={submitCart}
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                     className="w-full bg-blue-600 text-white font-mono uppercase text-sm py-4 rounded hover:bg-blue-500 transition-colors shadow-[0_0_20px_rgba(37,99,235,0.3)]"
                   >
-                    Checkout // {cart.length} items
+                    Transmitir Pedido // {cart.length} items
                   </motion.button>
                 </div>
               )}

@@ -10,7 +10,10 @@ class TenantController extends Controller
 {
     public function show($domain)
     {
-        $tenant = Tenant::where('domain', $domain)->firstOrFail();
+        $tenant = Tenant::where('domain', $domain)
+            ->where('status', Tenant::STATUS_ACTIVE)
+            ->firstOrFail();
+
         return new TenantResource($tenant);
     }
 }
